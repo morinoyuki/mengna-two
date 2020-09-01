@@ -1,0 +1,11 @@
+{
+    "name": "plugin-saohua",
+    "version": "0.0.1",
+    "description": "骚话",
+    "main": "index.js",
+    "publishConfig": {
+      "access": "public"
+    },
+    "author": "老森",
+    "license": "AGPL-3.0"
+  }

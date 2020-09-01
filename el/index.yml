@@ -1,6 +1,6 @@
 plugins:
   default:
-    - rss
+    # - rss
     - answer
     - cli
     - limit
@@ -8,37 +8,70 @@ plugins:
     # - dev
     - teach
   official:
+    - setu
     # - hitokoto
     # - niubi
   custom:
-    - ./bot/test
+    - ./plugins/custom/search-anime
+    - ./plugins/custom/search-image
+    - ./plugins/custom/tiangou
+    - ./plugins/custom/music
+    - ./plugins/custom/saohua
+    - ./plugins/custom/sleep
+    - ./plugins/custom/help
+    # - ./bot/test
 
-rss:
-  - name: 云游君的小站
-    url: https://www.yunyoujun.cn/atom.xml
-    # cron: "*/1 * * * *"
-    customFields:
-      item:
-        - updated
-        - summary
-    content:
-      - 标题：${item.title}
-      - 链接：${item.link}
-      - 时间：${item.updated}
-    target:
-      group:
-        # 机器人测试群
-        - 120117362
+# 主人
+master:
+  - 454693264
+
+# 限制
+limit:
+  interval: 20000
+  count: 10
+  sender:
+    # 连续次数
+    maximum: 4
+    tooltip: 我生气了！
+    time: 600
+
+# 搜图
+search-image:
+  token: 27b5bbc3450e354540e56852bfd5dce0b2a8b726
+  options:
+    results: 2 # 结果数
+  ready: 请发送要搜索的图
+  searching: 少女祈祷中...
+
+# 搜番
+search-anime:
+  token: fc0751d63c9b56b0c346ae8c4893bed576d8a2f9
+
+# 色图
+setu:
+  url: https://el-bot-api.vercel.app/api/setu
+  proxy: https://images.weserv.nl/?url=
+  match:
+    - is: 不够色
+    - is: 涩图
+    - is: 色图
+    - includes:
+        - 来
+        - 色图
+    - includes:
+        - 来
+        - 涩图
+  reply: 让我找找
+
+
+# 舔狗
+tiangou:
+  match:
+    - is: 舔狗日记
+    - is: 舔狗日志
 
 # 消息应答
 answer:
-  - re: 早呀|早上|哦哈呦|起床啦
-    reply:
-      - type: Plain
-        text: 新的一天也要加油鸭
-  - re: 晚安|哦呀斯密
-    api: https://el-bot-api.vercel.app/api/wanan
-    reply: ${data[0]}
   - at: true
     includes: 在吗
     reply: 我在

@@ -16,6 +16,6 @@ module.exports = {
   webhook: {
     path: "/webhook",
     port: 7777,
-    secret: "el-psy-congroo",
+    secret: "14gd4erujr5yht5ijg",
   },
 };

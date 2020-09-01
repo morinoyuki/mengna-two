@@ -1,0 +1,11 @@
+{
+    "name": "plugin-music",
+    "version": "0.0.1",
+    "description": "点歌",
+    "main": "index.js",
+    "publishConfig": {
+      "access": "public"
+    },
+    "author": "老森",
+    "license": "AGPL-3.0"
+  }

@@ -1,0 +1,11 @@
+{
+    "name": "plugin-tiangou",
+    "version": "0.0.1",
+    "description": "舔狗日记",
+    "main": "index.js",
+    "publishConfig": {
+      "access": "public"
+    },
+    "author": "老森",
+    "license": "AGPL-3.0"
+  }
