@@ -18,6 +18,7 @@ module.exports = async (ctx, options) => {
     // const config = ctx.el.config;
     const mirai = ctx.mirai;
     utils.config.merge(searchImage, options);
+    const client =  saucenao(searchImage.options.results, searchImage.token, searchImage.options);
     let searchImageFlag = {};
     mirai.on('message', async (msg) => {
         if (msg.plain.trim() === '搜图') {
@@ -35,7 +36,7 @@ module.exports = async (ctx, options) => {
                     let saContent;
                     let similarity;
                     try {
-                        const saData = await saucenao(message.url, searchImage.options.results, searchImage.token, searchImage.options);
+                        const saData = await client(message.url);
                         saContent = saData.content
                         similarity = saData.similarity;
                     } catch (e) {

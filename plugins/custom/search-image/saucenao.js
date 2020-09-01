@@ -2,7 +2,6 @@ const { getImage } = require('../../utils');
 const sagiri = require('sagiri');
 const { Message } = require('mirai-ts');
 
-let client;
 // 格式化saucenao结果
 async function formatResult(result) {
     const r = [
@@ -17,9 +16,10 @@ async function formatResult(result) {
 }
 
 
-module.exports = async (url, maxLength, token, options) => {
-    if (!client) client = sagiri(token,options);
-    const result = await client(url);
+module.exports = (maxLength, token, options) => {
+    const client = sagiri(token,options);
+    return async (url) => {
+        const result = await client(url);
     let content = [];
     for (let i = 0; i < (result.length > maxLength ? maxLength : result.length); i++) {
         content = content.concat(await formatResult(result[i]));
@@ -28,5 +28,6 @@ module.exports = async (url, maxLength, token, options) => {
     return {
         content,
         similarity: result[0].similarity
+    };
     };
 }
