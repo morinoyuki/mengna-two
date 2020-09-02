@@ -9,14 +9,14 @@ plugins:
     - teach
   official:
     - setu
-    # - hitokoto
+    - hitokoto
     # - niubi
   custom:
     - ./plugins/custom/search-anime
     - ./plugins/custom/search-image
     - ./plugins/custom/tiangou
     - ./plugins/custom/music
-    - ./plugins/custom/saohua
+    - ./plugins/custom/mapi
     - ./plugins/custom/sleep
     - ./plugins/custom/help
     # - ./bot/test
@@ -63,6 +63,31 @@ setu:
         - 涩图
   reply: 让我找找
 
+# 一言
+hitokoto:
+  cron: 0 0 * * *
+  target:
+    group:
+      - 828090839
+  match:
+    - is: say
+    - is: 一言
+    - includes: 说点骚话
+  params:
+    # c:
+    # encode:
+    # charset:
+    # callback:
+    # select:
+    # min_length:
+    # max_length:
+
+# 帮助
+help:
+  match:
+    - is: 帮助
+    - is: help
+    - is: 指令
 
 # 舔狗
 tiangou:

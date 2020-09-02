@@ -33,6 +33,9 @@
   },
   "homepage": "https://github.com/ElpsyCN/el-bot-template#readme",
   "dependencies": {
+    "@el-bot/plugin-hitokoto": "^0.0.11",
+    "@el-bot/plugin-setu": "^0.0.12",
+    "ascii2d": "^3.0.1",
     "axios": "^0.20.0",
     "download": "^8.0.0",
     "el-bot": "^0.3.21",

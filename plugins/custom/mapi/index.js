@@ -4,7 +4,7 @@ const axios = require('axios').default;
 module.exports = async (ctx) => {
     const {mirai} = ctx
     mirai.on('message', async (msg) => {
-        if (msg.plain === '骚话') {
+        if (msg.plain === '彩虹屁') {
             try {
                 const {data} = await axios.get('https://chp.shadiao.app/api.php')
                 msg.reply(data)
