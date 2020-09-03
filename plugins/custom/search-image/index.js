@@ -22,10 +22,10 @@ module.exports = async (ctx, options) => {
     let searchImageFlag = {};
     mirai.on('message', async (msg) => {
         if (msg.plain.trim() === '搜图') {
-            searchImageFlag[`${msg.sender.id}`] = true;
+            searchImageFlag[msg.sender.id.toString()] = true;
             if (msg.messageChain.length == 2) msg.reply(searchImage.ready);
         }
-        if (searchImageFlag[`${msg.sender.id}`]) {
+        if (searchImageFlag[msg.sender.id.toString()]) {
             let searchReply = false;
             msg.messageChain.forEach(async (message) => {
                 if (message.type === 'Image') {
@@ -37,7 +37,7 @@ module.exports = async (ctx, options) => {
                     let similarity;
                     try {
                         const saData = await client(message.url);
-                        saContent = saData.content
+                        saContent = saData.content;
                         similarity = saData.similarity;
                     } catch (e) {
                         log.warning(e);
@@ -54,7 +54,7 @@ module.exports = async (ctx, options) => {
                         msg.reply(a2dContent);
                     }
                     // searchImageFlag[`${msg.sender.id}`] = false;
-                    delete searchImageFlag[`${msg.sender.id}`];
+                    delete searchImageFlag[msg.sender.id.toString()];
                 }
             })
         }

@@ -1,5 +1,3 @@
-// const { utils } = require('el-bot');
-// const util = require('util'); 
 const { Message, log } = require('mirai-ts');
 const TraceMoe = require('tracemoe-helper');
 const { getImage } = require('../../utils');
@@ -37,10 +35,10 @@ module.exports = async (ctx, options) => {
     let searchFlag = {};
     mirai.on('message', async (msg) => {
         if (msg.plain.trim() === '搜番') {
-            searchFlag[`${msg.sender.id}`] = true;
+            searchFlag[msg.sender.id.toString()] = true;
             if (msg.messageChain.length == 2) msg.reply('请发送要搜索的截图');
         }
-        if (searchFlag[`${msg.sender.id}`]) {
+        if (searchFlag[msg.sender.id.toString()]) {
             let searchReply = false;
             msg.messageChain.forEach(async (smsg) => {
                 if (smsg.type === 'Image') {
@@ -49,7 +47,7 @@ module.exports = async (ctx, options) => {
                         searchReply = true;
                     }
                     msg.reply(await traceSearch(smsg.url));
-                    delete searchFlag[`${msg.sender.id}`];
+                    delete searchFlag[msg.sender.id.toString()];
                 }
             });
         }
