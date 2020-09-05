@@ -1,4 +1,4 @@
-const { utils } = require('el-bot');
+const { utils, default: Bot } = require('el-bot');
 const { check } = require('mirai-ts');
 let helpOptions = {
     match: [
@@ -7,6 +7,12 @@ let helpOptions = {
         }
     ]
 }
+
+/**
+ * 帮助信息
+ * @param {Bot} ctx 
+ * @param {helpOptions} options 
+ */
 module.exports = (ctx, options) => {
     const mirai = ctx.mirai
     utils.config.merge(helpOptions, options)

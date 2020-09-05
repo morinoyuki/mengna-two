@@ -1,9 +1,13 @@
 const { Message, log } = require('mirai-ts');
 const TraceMoe = require('tracemoe-helper');
 const { getImage } = require('../../utils');
+const { default: Bot } = require('el-bot');
 
 let api;
-
+/**
+ * 
+ * @param {Object} data 
+ */
 async function formatResult(data) {
     let r = [
         Message.Plain('搜索结果：'),
@@ -18,6 +22,10 @@ async function formatResult(data) {
     return r;
 }
 
+/**
+ * 搜索
+ * @param {String} url 
+ */
 async function traceSearch(url) {
     try {
         const data = await api.search(url);
@@ -28,7 +36,11 @@ async function traceSearch(url) {
         return '失败';
     }
 }
-
+/**
+ * 搜番
+ * @param {Bot} ctx 
+ * @param {Object} options 
+ */
 module.exports = async (ctx, options) => {
     const mirai = ctx.mirai;
     api = new TraceMoe(options.token || ''); // 实例化

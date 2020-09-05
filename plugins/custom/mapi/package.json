@@ -1,7 +1,7 @@
 {
-    "name": "plugin-saohua",
+    "name": "plugin-mapi",
     "version": "0.0.1",
-    "description": "骚话",
+    "description": "彩虹屁",
     "main": "index.js",
     "publishConfig": {
       "access": "public"

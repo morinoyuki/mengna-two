@@ -1,7 +1,10 @@
 const download = require('download');
 const stringRandom = require('string-random');
 const { Message } = require('mirai-ts');
-// 图片获取
+/**
+ * 安全的获取图片
+ * @param {String} url 
+ */
 async function getImage(url) {
     let image;
     try {

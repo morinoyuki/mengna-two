@@ -6,7 +6,7 @@ const { Message,log } = require('mirai-ts');
 async function formatResult(item) {
     const r = [
         await getImage(item.thumbnailUrl),
-        Message.Plain(`\n标题：${item.source.title}`),
+        Message.Plain(`\n标题：${item.source.title || '未知'}`),
         Message.Plain(`\n站点：${item.source.type}`),
         Message.Plain(`\n链接：${item.source.url}`),
         Message.Plain('\n------------\n'),

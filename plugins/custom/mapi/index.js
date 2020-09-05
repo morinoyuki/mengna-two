@@ -1,6 +1,11 @@
 const { log } = require('mirai-ts');
+const { default: Bot } = require('el-bot');
 const axios = require('axios').default;
 
+/**
+ * 彩虹屁
+ * @param {Bot} ctx 
+ */
 module.exports = async (ctx) => {
     const {mirai} = ctx
     mirai.on('message', async (msg) => {

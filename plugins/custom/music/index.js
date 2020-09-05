@@ -2,6 +2,7 @@ const { Message, log } = require('mirai-ts');
 const axios = require('axios').default;
 const stringRandom = require('string-random');
 const NeteaseMusic = require('simple-netease-cloud-music');
+const { default: Bot } = require('el-bot');
 const nm = new NeteaseMusic();
 
 /**
@@ -78,7 +79,10 @@ async function qqMusicSearch(keyword) {
     return JSON.parse(j);
 }
 
-
+/**
+ * 点歌
+ * @param {Bot} ctx 
+ */
 module.exports = async (ctx) => {
     const mirai = ctx.mirai;
     mirai.on('message', async (msg) => {

@@ -1,6 +1,6 @@
-const { utils } = require('el-bot');
+const { utils, default: Bot } = require('el-bot');
 // const util = require('util'); 
-const { log, check } = require('mirai-ts');
+const { log, Message } = require('mirai-ts');
 const saucenao = require('./saucenao');
 const ascii2d = require('./ascii2d');
 
@@ -14,6 +14,11 @@ let searchImage = {
     searching: '少女祈祷中..'
 };
 
+/**
+ * 
+ * @param {Bot} ctx 
+ * @param {searchImage} options 
+ */
 module.exports = async (ctx, options) => {
     // const config = ctx.el.config;
     const mirai = ctx.mirai;
@@ -41,11 +46,11 @@ module.exports = async (ctx, options) => {
                         similarity = saData.similarity;
                     } catch (e) {
                         log.warning(e);
-                        similarity = 0;
+                        similarity = 0; 
                     }
                     if (similarity > 40) {
+                        if (similarity < 60) saContent.push(Message.Plain('相似度过低 自动尝试ascii2d查询'));
                         msg.reply(saContent);
-                        if (similarity < 60) msg.reply('相似度过低 自动尝试ascii2d查询');
                     } else {
                         msg.reply('SauceNAO查询失败 自动尝试ascii2d查询');
                     }
