@@ -49,7 +49,7 @@ module.exports = async (ctx, options) => {
                         similarity = 0; 
                     }
                     if (similarity > 40) {
-                        if (similarity < 60) saContent.push(Message.Plain('相似度过低 自动尝试ascii2d查询'));
+                        if (similarity < 60) saContent.push(Message.Plain('\n相似度过低 自动尝试ascii2d查询'));
                         msg.reply(saContent);
                     } else {
                         msg.reply('SauceNAO查询失败 自动尝试ascii2d查询');
