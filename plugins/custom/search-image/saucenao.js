@@ -20,14 +20,18 @@ module.exports = (maxLength, token, options) => {
     const client = sagiri(token,options);
     return async (url) => {
         const result = await client(url);
-    let content = [];
-    for (let i = 0; i < (result.length > maxLength ? maxLength : result.length); i++) {
-        content = content.concat(await formatResult(result[i]));
-    }
-    content = content.concat(Message.Plain(`${result.length > maxLength ? maxLength : result.length}个结果`));
-    return {
-        content,
-        similarity: result[0].similarity
-    };
+        let content = [];
+        let num = 0;
+        for (let i = 0; i < (result.length > maxLength ? maxLength : result.length); i++) {
+            if (result[0].similarity < 40) break;
+            content = content.concat(await formatResult(result[i]));
+            num++;
+        }
+        if (result.length == 0) throw new Error('无结果');
+        content = content.concat(Message.Plain(`${num}个结果`));
+        return {
+            content,
+            similarity: result[0].similarity
+        };
     };
 }
