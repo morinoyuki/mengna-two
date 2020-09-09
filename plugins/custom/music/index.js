@@ -84,7 +84,7 @@ async function qqMusicSearch(keyword) {
  * @param {Bot} ctx 
  */
 module.exports = async (ctx) => {
-    const mirai = ctx.mirai;
+    const {mirai, logger} = ctx;
     mirai.on('message', async (msg) => {
         const typeString = msg.plain.split(" ")[0].toLowerCase();
         const keyword = msg.plain.slice(typeString.length).trim();
@@ -102,7 +102,7 @@ module.exports = async (ctx) => {
                 const appData = getAppContent(result.songs[0]);
                 msg.reply([Message.App(appData)]);
             } catch (e) {
-                log.warning(e);
+                logger.error(`[music] ${e.message}`);
                 msg.reply('失败');
             }
         } else if (typeString === 'qq点歌') {
@@ -122,11 +122,12 @@ module.exports = async (ctx) => {
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
                     }
                 });
+                logger.info(`[music] QQ音频地址:${data.data}`);
                 song.url = data.data;
                 const appData = getAppContent(song, 'qq');
                 msg.reply([Message.App(appData)]);
             } catch (e) {
-                log.warning(e);
+                logger.error(`[music] ${e.message}`);
                 msg.reply('失败');
             }
         }

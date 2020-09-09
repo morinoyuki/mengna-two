@@ -27,7 +27,7 @@ module.exports = (maxLength, token, options) => {
             content = content.concat(await formatResult(result[i]));
             num++;
         }
-        if (result.length == 0) throw new Error('无结果');
+        if (content.length == 0) throw new Error('无结果');
         content = content.concat(Message.Plain(`${num}个结果`));
         return {
             content,

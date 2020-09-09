@@ -45,7 +45,7 @@ module.exports = async (ctx, options) => {
                         saContent = saData.content;
                         similarity = saData.similarity;
                     } catch (e) {
-                        log.warning(e);
+                        logger.error(`[search-image] ${e.message}`);
                         similarity = 0; 
                     }
                     if (similarity > 40) {

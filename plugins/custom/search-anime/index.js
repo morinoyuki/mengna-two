@@ -1,9 +1,10 @@
-const { Message, log } = require('mirai-ts');
+const { Message } = require('mirai-ts');
 const TraceMoe = require('tracemoe-helper');
 const { getImage } = require('../../utils');
 const { default: Bot } = require('el-bot');
 
 let api;
+let logger;
 /**
  * 
  * @param {Object} data 
@@ -32,7 +33,7 @@ async function traceSearch(url) {
         const res = await formatResult(data);
         return res;
     } catch (e) {
-        log.warning(e);
+        logger.error(`[search-anime] ${e.message}`);
         return '失败';
     }
 }
@@ -43,6 +44,7 @@ async function traceSearch(url) {
  */
 module.exports = async (ctx, options) => {
     const mirai = ctx.mirai;
+    logger = ctx.logger
     api = new TraceMoe(options.token || ''); // 实例化
     let searchFlag = {};
     mirai.on('message', async (msg) => {
