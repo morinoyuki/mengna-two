@@ -6,7 +6,7 @@ plugins:
     - limit
     - forward
     # - dev
-    - teach
+    # - teach
   official:
     - setu
     - hitokoto
@@ -15,6 +15,7 @@ plugins:
     - ./plugins/custom/search-anime
     - ./plugins/custom/search-image
     - ./plugins/custom/invited-bot
+    - ./plugins/custom/kugimiya-voice
     - ./plugins/custom/tiangou
     - ./plugins/custom/music
     - ./plugins/custom/mapi
@@ -34,7 +35,7 @@ limit:
     # 连续次数
     maximum: 4
     tooltip: 我生气了！
-    time: 600
+    time: 2400
 
 # 搜图
 search-image:

@@ -27,6 +27,7 @@ module.exports = (ctx, options) => {
     舔狗日记
     涩图/色图
     彩虹屁
+    骂我
     一言
     sleep`
                 msg.reply(text)
