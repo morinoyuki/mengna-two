@@ -23,10 +23,7 @@ function loadFiles(logger) {
 function sendVoice(reply) {
     const i = Math.floor(Math.random()*cacheFiles.length);
     const voice = cacheFiles[i];
-    reply([{
-        type: 'Voice',
-        path: `钉宫/${voice}`
-    }]);
+    reply([Message.Voice(null, null, `钉宫/${voice}`)]);
 }
 
 /**
