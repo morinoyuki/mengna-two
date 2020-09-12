@@ -30,6 +30,7 @@ async function formatResult(data) {
 async function traceSearch(url) {
     try {
         const data = await api.search(url);
+        if (!data || !data.docs) throw new Error('搜索失败');
         const res = await formatResult(data);
         return res;
     } catch (e) {
@@ -53,13 +54,13 @@ module.exports = async (ctx, options) => {
             if (msg.messageChain.length == 2) msg.reply('请发送要搜索的截图');
         }
         if (searchFlag[msg.sender.id.toString()]) {
-            let searchReply = false;
+            // let searchReply = false;
             msg.messageChain.forEach(async (smsg) => {
                 if (smsg.type === 'Image') {
-                    if (!searchReply) {
-                        msg.reply('少女祈祷中...');
-                        searchReply = true;
-                    }
+                    // if (!searchReply) {
+                    //     msg.reply('少女祈祷中...');
+                    //     searchReply = true;
+                    // }
                     msg.reply(await traceSearch(smsg.url));
                     delete searchFlag[msg.sender.id.toString()];
                 }

@@ -31,13 +31,13 @@ module.exports = async (ctx, options) => {
             if (msg.messageChain.length == 2) msg.reply(searchImage.ready);
         }
         if (searchImageFlag[msg.sender.id.toString()]) {
-            let searchReply = false;
+            // let searchReply = false;
             msg.messageChain.forEach(async (message) => {
                 if (message.type === 'Image') {
-                    if (!searchReply) {
-                        msg.reply(searchImage.searching);
-                        searchReply = true;
-                    }
+                    // if (!searchReply) {
+                    //     msg.reply(searchImage.searching);
+                    //     searchReply = true;
+                    // }
                     let saContent;
                     let similarity;
                     try {
@@ -45,7 +45,7 @@ module.exports = async (ctx, options) => {
                         saContent = saData.content;
                         similarity = saData.similarity;
                     } catch (e) {
-                        logger.error(`[search-image] ${e.message}`);
+                        ctx.logger.error(`[search-image] ${e.message}`);
                         similarity = 0; 
                     }
                     if (similarity > 40) {

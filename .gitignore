@@ -11,12 +11,7 @@ log/
 .DEBUG
 
 # mirai
-*.jar
-*.temp
-content/
-device.json
-libraries/
-bot.yml
+mirai/
 
 .DS_Store
 yarn.lock

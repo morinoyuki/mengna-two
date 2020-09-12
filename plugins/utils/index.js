@@ -9,7 +9,7 @@ async function getImage(url) {
     let image;
     try {
         const fileName = `${stringRandom(14)}.temp`;
-        await download(url, './mirai/plugins/MiraiAPIHTTP/images', {filename: fileName});
+        await download(url, './mirai/data/MiraiAPIHTTP/images', {filename: fileName});
         image = Message.Image(null, null, fileName);
         
     } catch {

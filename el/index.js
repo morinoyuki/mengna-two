@@ -6,7 +6,7 @@ module.exports = {
   qq: parseInt(process.env.BOT_QQ),
   // 你可以直接解析 mirai-api-http 的配置
   setting: utils.config.parse(
-    resolve(__dirname, "../mirai/plugins/MiraiAPIHTTP/setting.yml")
+    resolve(__dirname, "../mirai/config/MiraiAPIHTTP/net.mamoe.mirai.api.http.config.Setting")
   ),
   // setting: {
   //   enableWebsocket: false
