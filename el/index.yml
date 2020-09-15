@@ -9,7 +9,7 @@ plugins:
     # - teach
   official:
     - setu
-    - hitokoto
+    # - hitokoto
     # - niubi
   custom:
     - ./plugins/custom/search-anime
@@ -33,7 +33,7 @@ limit:
   count: 10
   sender:
     # 连续次数
-    maximum: 4
+    maximum: 3
     tooltip: 我生气了！
     time: 2400
 
@@ -51,60 +51,40 @@ search-anime:
 
 # 色图
 setu:
-  url: https://el-bot-api.vercel.app/api/setu
-  proxy: https://images.weserv.nl/?url=
+  url: https://api.lolicon.app/setu/?apikey=877789775f5c596fa93852
+  # proxy: https://images.weserv.nl/?url=
   match:
-    - is: 不够色
-    - is: 涩图
-    - is: 色图
+    - is: 
+      - 不够色
+      - 涩图
+      - 色图
     - includes:
-        - 来
-        - 色图
+      - 来
+      - 色图
     - includes:
-        - 来
-        - 涩图
+      - 来
+      - 涩图
   reply: 让我找找
-
-# 一言
-hitokoto:
-  cron: 0 0 * * *
-  target:
-    group:
-      - 828090839
-  match:
-    - is: say
-    - is: 一言
-    - includes: 说点骚话
-  params:
-    # c:
-    # encode:
-    # charset:
-    # callback:
-    # select:
-    # min_length:
-    # max_length:
 
 # 帮助
 help:
   match:
-    - is: 帮助
-    - is: help
-    - is: 指令
+    - is: 
+      - 帮助
+      - help
+      - 指令
 
 # 舔狗
 tiangou:
   match:
-    - is: 舔狗日记
-    - is: 舔狗日志
+    - is:
+      - 舔狗日记
+      - 舔狗日志
 
 # 消息应答
 answer:
-  - at: true
-    includes: 在吗
-    reply: 我在
-  - includes:
-      - bing
-      - 壁纸
-    reply:
-      - type: Image
-        url: https://images.weserv.nl/?url=https://bing.ioliu.cn/v1/rand
+  - is: 
+    - 一言
+    - 骚话
+    api: https://v1.hitokoto.cn/
+    reply: ${data.hitokoto} ——「${data.from}」

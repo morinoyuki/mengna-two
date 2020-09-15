@@ -5,7 +5,7 @@ const { default: Bot } = require("el-bot");
  * @param {Bot} ctx 
  */
 module.exports = (ctx) => {
-    const {mirai, user} = ctx;
+    const { mirai, user } = ctx;
     mirai.on('BotInvitedJoinGroupRequestEvent', (event) => {
         if (user.isAllowed(event.fromId)) {
             mirai.api.resp.botInvitedJoinGroupRequest(event, 'allow', '同意');

@@ -1,6 +1,7 @@
+// eslint-disable-next-line no-unused-vars
 const { utils, default: Bot } = require('el-bot');
 // const util = require('util'); 
-const { log, Message } = require('mirai-ts');
+const { Message } = require('mirai-ts');
 const saucenao = require('./saucenao');
 const ascii2d = require('./ascii2d');
 
@@ -23,7 +24,7 @@ module.exports = async (ctx, options) => {
     // const config = ctx.el.config;
     const mirai = ctx.mirai;
     utils.config.merge(searchImage, options);
-    const client =  saucenao(searchImage.options.results, searchImage.token, searchImage.options);
+    const client = saucenao(searchImage.options.results, searchImage.token, searchImage.options);
     let searchImageFlag = {};
     mirai.on('message', async (msg) => {
         if (msg.plain.trim() === '搜图') {
@@ -46,7 +47,7 @@ module.exports = async (ctx, options) => {
                         similarity = saData.similarity;
                     } catch (e) {
                         ctx.logger.error(`[search-image] ${e.message}`);
-                        similarity = 0; 
+                        similarity = 0;
                     }
                     if (similarity > 40) {
                         if (similarity < 60) saContent.push(Message.Plain('\n相似度过低 自动尝试ascii2d查询'));
@@ -55,11 +56,11 @@ module.exports = async (ctx, options) => {
                         msg.reply('SauceNAO查询失败 自动尝试ascii2d查询');
                     }
                     if (similarity < 60) {
-                        const a2dContent = await ascii2d(message.url);
+                        const a2dContent = await ascii2d(message.url, ctx.logger);
                         msg.reply(a2dContent);
                     }
                     // searchImageFlag[`${msg.sender.id}`] = false;
-                    delete searchImageFlag[msg.sender.id.toString()];
+                    if (searchImageFlag[msg.sender.id.toString()]) delete searchImageFlag[msg.sender.id.toString()];
                 }
             })
         }

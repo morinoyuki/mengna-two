@@ -1,7 +1,7 @@
+const { default: Bot } = require('el-bot');
 const { Message } = require('mirai-ts');
 const TraceMoe = require('tracemoe-helper');
 const { getImage } = require('../../utils');
-const { default: Bot } = require('el-bot');
 
 let api;
 let logger;
@@ -14,12 +14,11 @@ async function formatResult(data) {
         Message.Plain('搜索结果：'),
         Message.Plain(`\n动画名：${data.docs[0].title_native}(${data.docs[0].title_romaji})`),
         Message.Plain(`\n中文名：${data.docs[0].title_chinese || '未知'}`),
-        Message.Plain(`\n准确度：${Math.floor(data.docs[0].similarity*100)}%${
-            data.docs[0].similarity < 0.86 ?'\n（准确度过低，请确保这张图片是完整的、没有裁剪过的动画视频截图）' : ''
-        }`),
+        Message.Plain(`\n准确度：${Math.floor(data.docs[0].similarity * 100)}%${data.docs[0].similarity < 0.86 ? '\n（准确度过低，请确保这张图片是完整的、没有裁剪过的动画视频截图）' : ''
+            }`),
         Message.Plain(`\n话数：${data.docs[0].episode || '未知'}`)
     ];
-    if (!data.docs[0].is_adult) r = r.concat([Message.Plain('\n'),await getImage(await api.previewImage(data.docs[0].anilist_id, data.docs[0].filename, data.docs[0].at, data.docs[0].tokenthumb))]);
+    if (!data.docs[0].is_adult) r = r.concat([Message.Plain('\n'), await getImage(await api.previewImage(data.docs[0].anilist_id, data.docs[0].filename, data.docs[0].at, data.docs[0].tokenthumb))]);
     return r;
 }
 

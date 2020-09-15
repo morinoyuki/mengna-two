@@ -1,6 +1,6 @@
 const { utils, default: Bot } = require('el-bot');
 // const util = require('util'); 
-const { Message, check, log } = require('mirai-ts');
+const { check } = require('mirai-ts');
 const axios = require('axios').default;
 
 const apiUrl = 'https://www.somekey.cn/tiangou/random.php';

@@ -1,4 +1,4 @@
-const { Message, log } = require('mirai-ts');
+const { Message } = require('mirai-ts');
 const axios = require('axios').default;
 const stringRandom = require('string-random');
 const NeteaseMusic = require('simple-netease-cloud-music');
@@ -38,7 +38,7 @@ function getAppContent(song, type = '163') {
         app: 'com.tencent.structmsg',
         config: {
             autosize: true,
-            ctime: Math.floor(Date.now()/1000),
+            ctime: Math.floor(Date.now() / 1000),
             forward: true,
             token: stringRandom(32),
             type: 'normal'
@@ -74,7 +74,7 @@ function getAppContent(song, type = '163') {
  * @param {string} keyword 
  */
 async function qqMusicSearch(keyword) {
-    const {data} = await axios.get(`https://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.song&searchid=&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p=1&n=20&w=${encodeURI(keyword)}`);
+    const { data } = await axios.get(`https://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.song&searchid=&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p=1&n=20&w=${encodeURI(keyword)}`);
     const j = /callback\((.+)\)$/.exec(data)[1];
     return JSON.parse(j);
 }
@@ -84,7 +84,7 @@ async function qqMusicSearch(keyword) {
  * @param {Bot} ctx 
  */
 module.exports = async (ctx) => {
-    const {mirai, logger} = ctx;
+    const { mirai, logger } = ctx;
     mirai.on('message', async (msg) => {
         const typeString = msg.plain.split(" ")[0].toLowerCase();
         const keyword = msg.plain.slice(typeString.length).trim();
