@@ -2,7 +2,7 @@ plugins:
   default:
     # - rss
     - answer
-    - cli
+    # - cli
     - limit
     - forward
     # - dev
@@ -42,8 +42,9 @@ search-image:
   token: 27b5bbc3450e354540e56852bfd5dce0b2a8b726
   options:
     results: 2 # 结果数
-  ready: 请发送要搜索的图
-  searching: 少女祈祷中...
+
+cache:
+  cron: '0 0 2 * * *'
 
 # 搜番
 search-anime:

@@ -1,7 +1,8 @@
 const { default: Bot } = require('el-bot');
 const { Message } = require('mirai-ts');
 const TraceMoe = require('tracemoe-helper');
-const { getImage } = require('../../utils');
+const { getImage, getCacheManager } = require('../../utils');
+const CacheManager = require('../../utils/CacheManager');
 
 let api;
 let logger;
@@ -45,7 +46,8 @@ async function traceSearch(url) {
 module.exports = async (ctx, options) => {
     const mirai = ctx.mirai;
     logger = ctx.logger
-    api = new TraceMoe(options.token || ''); // 实例化
+    api = new TraceMoe(options.token || null); // 实例化
+    const cache = getCacheManager(ctx);
     let searchFlag = {};
     mirai.on('message', async (msg) => {
         if (msg.plain.trim() === '搜番') {
@@ -53,14 +55,17 @@ module.exports = async (ctx, options) => {
             if (msg.messageChain.length == 2) msg.reply('请发送要搜索的截图');
         }
         if (searchFlag[msg.sender.id.toString()]) {
-            // let searchReply = false;
             msg.messageChain.forEach(async (smsg) => {
                 if (smsg.type === 'Image') {
-                    // if (!searchReply) {
-                    //     msg.reply('少女祈祷中...');
-                    //     searchReply = true;
-                    // }
-                    msg.reply(await traceSearch(smsg.url));
+                    const imageMd5 = smsg.url.match(/\-([^-\/]{32})/)[1];
+                    const cacheData = await cache.getCache(imageMd5, 'anime');
+                    if (cacheData) {
+                        msg.reply(cacheData.msg);
+                    } else {
+                        const result = await traceSearch(smsg.url);
+                        msg.reply(result);
+                        if (Array.isArray(result)) cache.setCache(imageMd5, 'anime', result, 0);
+                    }
                     delete searchFlag[msg.sender.id.toString()];
                 }
             });

@@ -13,7 +13,7 @@ module.exports = {
   // },
   db: {
     // 默认关闭
-    enable: false,
+    enable: true,
     uri: process.env.BOT_DB_URI,
     analytics: true,
   },

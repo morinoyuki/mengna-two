@@ -53,7 +53,7 @@ module.exports = async (url, logger) => {
     try {
         const resultc = await searchByUrl(url, 'color');
         content = content.concat(await formatResult(resultc.items[0]));
-    } catch {
+    } catch (e) {
         logger.warning(e.message);
         content = content.concat(Message.Plain('失败\n'));
     }
