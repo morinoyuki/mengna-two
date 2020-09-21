@@ -45,7 +45,7 @@ async function traceSearch(url) {
 module.exports = async (ctx, options) => {
     const mirai = ctx.mirai;
     logger = ctx.logger;
-    api = new TraceMoe(options && options.token || ''); // 实例化
+    api = new TraceMoe((options && options.token) || ''); // 实例化
     const cache = getCacheManager(ctx);
     let searchFlag = {};
     mirai.on('message', async (msg) => {

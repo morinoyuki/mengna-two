@@ -53,12 +53,12 @@ module.exports = class {
      * @param {String} url 
      */
     async ocr(url) {
-        if (!this[token] || !this[token].token || !this[token].time || this[token].time < Date.now() / 1000) {
+        if (!this[token] || !this[token].token || !this[token].time || this[token].time < Math.floor(Date.now() / 1000)) {
             const r = await fetch(`https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${this[options].apiKey}&client_secret=${this[options].secretKey}`).then(res => res.text());
             const j = JSON.parse(r);
             this[token] = {};
             this[token].token = j.access_token;
-            this[token].time = (Date.now / 1000) + j.expires_in;
+            this[token].time = Math.floor(Date.now / 1000) + j.expires_in;
         }
         const response = await fetch(url);
         const imageType = response.headers.get('Content-Type');
@@ -73,14 +73,12 @@ module.exports = class {
             body: `url=${url}`
         }).then(res => res.text());
         const json = JSON.parse(result);
-        console.log(json);
         if (!json.words_result || json.words_result.length === 0) {
             return null
         }
         let res = '';
         for (let i = 0; i < json.words_result.length; i++) {
             res = res + json.words_result[i].words;
-
         }
         return res;
     }
@@ -99,7 +97,7 @@ module.exports = class {
                 msg.messageChain.forEach(async singleMessage => {
                     if (singleMessage.type === 'Image') {
                         const md5 = singleMessage.url.match(/\-([^-\/]{32})/)[1]
-                        if (md != imageMd5) imageMd5 = md5;
+                        if (imageMd5 !== md5) imageMd5 = md5;
                         if (!this[cache][imageMd5]) {
                             if (this[cache].i > 500) {
                                 delete this[cache];
@@ -133,7 +131,7 @@ module.exports = class {
         if (v.keyword.is) {
             keywordText = Array.isArray(v.keyword.includes) ? v.keyword.is.join('/') : v.keyword.is;
         }
-        this[api].mute(msg.sender.group.id, msg.sender.id, v.keyword.meta && v.keyword.meta.muteTime || this[options].muteTime).then(res => {
+        this[api].mute(msg.sender.group.id, msg.sender.id, (v.meta && v.meta.muteTime) || this[options].muteTime).then(res => {
             if (res.code === 0) {
                 msg.reply(`检测到关键词: ${keywordText},type: ${v.type} 予以处罚`);
             }
