@@ -1,9 +1,2 @@
-const axios = require('axios').default;
-
-axios.get('https://chp.shadiao.app/api.php', {
-    headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
-    }
-}).then((data)=>{
-    console.log(data.data);
-});
+var test = 'http://gchat.qpic.cn/gchatpic_new/454693264/828090839-2798905367-89AB6CC5FFFF3B5CEE15B970135E3B66/0?term=2';
+console.log(test.match(/\-([^-\/]{32})/));

@@ -2,7 +2,6 @@ const { default: Bot } = require('el-bot');
 const { Message } = require('mirai-ts');
 const TraceMoe = require('tracemoe-helper');
 const { getImage, getCacheManager } = require('../../utils');
-const CacheManager = require('../../utils/CacheManager');
 
 let api;
 let logger;
@@ -45,8 +44,8 @@ async function traceSearch(url) {
  */
 module.exports = async (ctx, options) => {
     const mirai = ctx.mirai;
-    logger = ctx.logger
-    api = new TraceMoe(options.token || null); // 实例化
+    logger = ctx.logger;
+    api = new TraceMoe(options && options.token || ''); // 实例化
     const cache = getCacheManager(ctx);
     let searchFlag = {};
     mirai.on('message', async (msg) => {

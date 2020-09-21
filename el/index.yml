@@ -16,12 +16,10 @@ plugins:
     - ./plugins/custom/search-image
     - ./plugins/custom/invited-bot
     - ./plugins/custom/kugimiya-voice
-    - ./plugins/custom/tiangou
     - ./plugins/custom/music
-    - ./plugins/custom/mapi
     - ./plugins/custom/sleep
+    - ./plugins/custom/group-manager
     - ./plugins/custom/help
-    # - ./bot/test
 
 # 主人
 master:

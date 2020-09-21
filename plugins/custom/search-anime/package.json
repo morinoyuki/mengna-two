@@ -2,6 +2,9 @@
   "name": "@el-bot/plugin-search-anime",
   "version": "0.0.1",
   "description": "以图搜番",
+  "el-bot": {
+    "db": true
+  },
   "main": "index.js",
   "publishConfig": {
     "access": "public"

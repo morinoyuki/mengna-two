@@ -13,7 +13,8 @@ class CacheManager {
      */
     constructor(ctx) {
         const db = ctx.db;
-        const cron = ctx.el.config.cache.cron;
+        const config = ctx.el.config;
+        const cron = config.cache && config.cache.cron || undefined;
         this[logger] = ctx.logger;
         this[imageCache] = db.collection('imageCache');
         this[imageCache].find().count().then(data => {
@@ -23,8 +24,8 @@ class CacheManager {
                         imageMd5: 1,
                         date: 1,
                         type: 1,
-                        similarity: 1,
-                        msg: 1,
+                        // similarity: 1,
+                        // msg: 1,
                     },
                     {
                         unique: true

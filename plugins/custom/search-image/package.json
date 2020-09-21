@@ -1,11 +1,14 @@
 {
-    "name": "plugin-search-image",
-    "version": "0.0.1",
-    "description": "搜图",
-    "main": "index.js",
-    "publishConfig": {
-      "access": "public"
-    },
-    "author": "morinoyuki",
-    "license": "AGPL-3.0"
-  }
+  "name": "plugin-search-image",
+  "version": "0.0.1",
+  "description": "搜图",
+  "el-bot": {
+    "db": true
+  },
+  "main": "index.js",
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": "morinoyuki",
+  "license": "AGPL-3.0"
+}
