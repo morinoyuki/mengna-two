@@ -6,6 +6,9 @@ let groupManagerOptions = {
             828090839,
         ]
     },
+    ocr: {
+        enable: false
+    },
     muteTime: 30 * 60
 };
 

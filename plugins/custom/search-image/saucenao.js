@@ -17,7 +17,7 @@ async function formatResult(result) {
 
 
 module.exports = (maxLength, token, options) => {
-    const client = sagiri(token,options);
+    const client = sagiri(token, options);
     return async (url) => {
         const result = await client(url);
         let content = [];

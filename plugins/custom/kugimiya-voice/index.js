@@ -21,7 +21,7 @@ function loadFiles(logger) {
  * @param {Function} reply 
  */
 function sendVoice(reply) {
-    const i = Math.floor(Math.random()*cacheFiles.length);
+    const i = Math.floor(Math.random() * cacheFiles.length);
     const voice = cacheFiles[i];
     reply([Message.Voice(null, null, `钉宫/${voice}`)]);
 }
@@ -31,7 +31,7 @@ function sendVoice(reply) {
  * @param {Bot} ctx 
  */
 module.exports = ctx => {
-    const {mirai, logger} = ctx;
+    const { mirai, logger } = ctx;
     logger.info('[kugimiya-voice] 首次运行正在读取文件列表到缓存');
     loadFiles(logger);
     mirai.on('message', msg => {

@@ -8,6 +8,7 @@ const collection = Symbol('collection');
 const options = Symbol('options');
 const mute = Symbol('mute');
 const logger = Symbol('logger');
+const ocr = Symbol('ocr');
 const api = Symbol('api');
 const cache = Symbol('cache');
 module.exports = class {
@@ -52,9 +53,9 @@ module.exports = class {
      * OCR识别-baidu api
      * @param {String} url 
      */
-    async ocr(url) {
+    async [ocr](url) {
         if (!this[token] || !this[token].token || !this[token].time || this[token].time < Math.floor(Date.now() / 1000)) {
-            const r = await fetch(`https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${this[options].apiKey}&client_secret=${this[options].secretKey}`).then(res => res.text());
+            const r = await fetch(`https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${this[options].ocr.apiKey}&client_secret=${this[options].ocr.secretKey}`).then(res => res.text());
             const j = JSON.parse(r);
             this[token] = {};
             this[token].token = j.access_token;
@@ -74,7 +75,7 @@ module.exports = class {
         }).then(res => res.text());
         const json = JSON.parse(result);
         if (!json.words_result || json.words_result.length === 0) {
-            return null
+            return null;
         }
         let res = '';
         for (let i = 0; i < json.words_result.length; i++) {
@@ -87,53 +88,58 @@ module.exports = class {
      * @param {import('mirai-ts').MessageType.ChatMessage} msg 
      */
     async check(msg) {
-        const keywords = await this[collection].find().toArray();
-        let imageMd5 = '';
-        keywords.map(v => {
-            if (check.match(msg.plain, v.keyword)) {
-                this[mute](msg, v);
-                return;
-            } else {
-                msg.messageChain.forEach(async singleMessage => {
-                    if (singleMessage.type === 'Image') {
-                        const md5 = singleMessage.url.match(/\-([^-\/]{32})/)[1]
-                        if (imageMd5 !== md5) imageMd5 = md5;
-                        if (!this[cache][imageMd5]) {
-                            if (this[cache].i > 500) {
-                                delete this[cache];
-                                this[cache] = { i: 0 };
-                            }
-                            this[cache][imageMd5] = {};
-                            this[cache][imageMd5].text = await this.ocr(singleMessage.url);
-                            this[cache].i++;
-                        }
-                        if (this[cache][imageMd5] && this[cache][imageMd5].text && check.match(this[cache][imageMd5].text, v.keyword)) {
-                            this[mute](msg, v);
-                        }
-                    }
-                });
+        const documents = await this[collection].find().toArray();
+        if (msg.plain) {
+            for (let i = 0; i < documents.length; i++) {
+                if (check.match(msg.plain, documents[i].keyword)) { // 文本
+                    this[mute](msg, documents[i]); // 禁言
+                    return true;
+                }
             }
-        });
+        }
+        // OCR
+        if (!this[options].ocr.enable) return false;
+        let imageMd5 = '';
+        for (let i = 0; i < msg.messageChain.length; i++) {
+            if (msg.messageChain[i].type === 'Image') {
+                imageMd5 = msg.messageChain[i].url.match(/\-([^-\/]{32})/)[1];
+                if (!this[cache][imageMd5]) {
+                    if (this[cache].i > 500) { // 缓存大于500
+                        delete this[cache];
+                        this[cache] = { i: 0 };
+                    }
+                    this[cache][imageMd5] = { text: await this[ocr](msg.messageChain[i].url) };
+                    this[cache].i++;
+                }
+                for (let index = 0; index < documents.length; index++) {
+                    if (this[cache][imageMd5] && this[cache][imageMd5].text && check.match(this[cache][imageMd5].text, documents[index].keyword)) {
+                        this[mute](msg, documents[index]); // 禁言
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     /**
      * 禁言
      * @param {import('mirai-ts').MessageType.ChatMessage} msg 
-     * @param {Object} v 
+     * @param {Object} document 
      */
-    [mute](msg, v) {
+    [mute](msg, document) {
         let keywordText;
-        if (v.keyword.includes) {
-            keywordText = Array.isArray(v.keyword.includes) ? v.keyword.includes.join('&') : v.keyword.includes;
+        if (document.keyword.includes) {
+            keywordText = Array.isArray(document.keyword.includes) ? document.keyword.includes.join('&') : document.keyword.includes;
         }
-        if (v.keyword.re) {
-            keywordText = typeof (v.keyword.re) === 'string' ? v.keyword.re : v.keyword.re.pattern;
+        if (document.keyword.re) {
+            keywordText = typeof (document.keyword.re) === 'string' ? document.keyword.re : document.keyword.re.pattern;
         }
-        if (v.keyword.is) {
-            keywordText = Array.isArray(v.keyword.includes) ? v.keyword.is.join('/') : v.keyword.is;
+        if (document.keyword.is) {
+            keywordText = Array.isArray(document.keyword.includes) ? document.keyword.is.join('/') : document.keyword.is;
         }
-        this[api].mute(msg.sender.group.id, msg.sender.id, (v.meta && v.meta.muteTime) || this[options].muteTime).then(res => {
+        this[api].mute(msg.sender.group.id, msg.sender.id, (document.meta && document.meta.muteTime) || this[options].muteTime).then(res => {
             if (res.code === 0) {
-                msg.reply(`检测到关键词: ${keywordText},type: ${v.type} 予以处罚`);
+                msg.reply(`检测到关键词: ${keywordText},type: ${document.type} 予以处罚`);
             }
         });
     }
