@@ -78,7 +78,7 @@ class CacheManager {
                     this[logger].error('[cache-manager] 图片文件列表读取失败');
                     return;
                 }
-                files.map(file => {
+                files.forEach(file => {
                     fs.unlinkSync(`${dir}/${file}`);
                 });
                 this[logger].success('[cache-manager] 已清空图片临时文件');

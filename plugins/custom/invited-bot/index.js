@@ -8,9 +8,9 @@ module.exports = (ctx) => {
     const { mirai, user } = ctx;
     mirai.on('BotInvitedJoinGroupRequestEvent', (event) => {
         if (user.isAllowed(event.fromId)) {
-            mirai.api.resp.botInvitedJoinGroupRequest(event, 'allow', '同意');
+            mirai.api.resp.botInvitedJoinGroupRequest(event, 1, '同意');
         } else {
-            mirai.api.resp.botInvitedJoinGroupRequest(event, 'deny', '不加新群');
+            mirai.api.resp.botInvitedJoinGroupRequest(event, 2, '不加新群');
         }
     });
 };

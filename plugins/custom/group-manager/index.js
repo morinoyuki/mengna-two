@@ -33,9 +33,7 @@ module.exports = async (ctx, options) => {
                     return;
                 }
                 const _temp = msg.plain.slice(cmdKeyword.length).trim();
-                const [type, keyword] = _temp.split(' ').map(v => {
-                    return v.trim();
-                });
+                const [type, keyword] = _temp.split(' ');
                 try {
                     const r = await manager.addKeyword(keyword, type);
                     msg.reply(`Done ObjectID: ${r.insertedId}`);
@@ -48,12 +46,27 @@ module.exports = async (ctx, options) => {
                     msg.reply('无权操作');
                     return;
                 }
-                const _t = msg.plain.slice(cmdKeyword.length).trim();
-                const id = _t.split(' ')[0];
-                const meta = JSON.parse(_t.slice(id.length).trim());
+                const _te = msg.plain.slice(cmdKeyword.length).trim();
+                const id = _te.split(' ')[0];
+                const meta = JSON.parse(_te.slice(id.length).trim());
                 try {
                     const r = await manager.setKeywordMeta(id, meta);
                     msg.reply(`Done res: ${JSON.stringify(r.result)}`);
+                } catch (e) {
+                    msg.reply(e.message);
+                }
+                break;
+            case 'delkey':
+                if (!user.isAllowed(msg.sender.id)) {
+                    msg.reply('无权操作');
+                    return;
+                }
+                const _t = msg.plain.slice(cmdKeyword.length).trim();
+                const [_type, _keyword] = _t.split(' ');
+                try {
+                    const r = await manager.deleteKeyword(_keyword, _type);
+                    msg.reply(`Done res: ${JSON.stringify(r.result)}`);
+
                 } catch (e) {
                     msg.reply(e.message);
                 }

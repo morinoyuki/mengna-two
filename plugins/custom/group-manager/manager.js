@@ -21,7 +21,7 @@ module.exports = class {
         const { db } = ctx;
         this[options] = opt;
         this[api] = ctx.mirai.api;
-        this[cache] = { i: 0 };
+        if (this[options].ocr.enable) this[cache] = { i: 0 };
         this[logger] = ctx.logger;
         // 关键词数据库集合
         this[collection] = db.collection('blackKeyword');
@@ -146,7 +146,7 @@ module.exports = class {
     /**
      * 向数据库添加关键词
      * @param {String} keyword 
-     * @param {String} type 
+     * @param {'is'|'re'|'includes'} type 
      * @returns {Promise<import("mongodb").InsertOneWriteOpResult>}
      */
     async addKeyword(keyword, type) {
@@ -179,10 +179,37 @@ module.exports = class {
                         type
                     }
                 );
+                break;
             default:
                 throw new Error('类型错误');
         }
         return r;
+    }
+    /**
+     * 删除关键词
+     * @param {String} keyword 
+     * @param {'is'|'re'|'includes'} type 
+     */
+    async deleteKeyword(keyword, type) {
+        if (type === 'includes') {
+            const keywordArray = keyword.split('|');
+            const r = await this[collection].deleteOne({
+                keyword: {
+                    includes: keywordArray
+                },
+                type
+            });
+            return r;
+        } else if (type === 'is' || type === 're') {
+            const r = await this[collection].deleteOne({
+                keyword: {
+                    [type]: keyword
+                },
+                type
+            });
+            return r;
+        }
+        throw new Error('类型错误');
     }
     /**
      * 设置关键词元数据
