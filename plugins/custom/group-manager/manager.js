@@ -12,6 +12,7 @@ const api = Symbol('api');
 const cache = Symbol('cache');
 const notice = Symbol('notice');
 const admin = Symbol('admin');
+const master = Symbol('master');
 module.exports = class {
     /**
      * 管理器类
@@ -21,6 +22,7 @@ module.exports = class {
     constructor(ctx, opt) {
         const { db, el } = ctx;
         this[admin] = el.config.admin;
+        this[master] = el.config.master;
         this[options] = opt;
         this[api] = ctx.mirai.api;
         if (this[options].ocr.enable) this[cache] = { i: 0 };
@@ -155,7 +157,7 @@ module.exports = class {
     async [notice](msg) {
         if (!this[admin]) return;
         const memberList = await this[api].memberList(msg.sender.group.id);
-        const adminList = this[admin];
+        const adminList = this[admin].concat(this[master]);
         let noticeList = [];
         memberList.forEach(_member => {
             adminList.forEach(_admin => {

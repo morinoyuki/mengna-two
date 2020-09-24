@@ -14,7 +14,7 @@ let groupManagerOptions = {
     cmdName: 'gm'
 };
 /**
- * 
+ * 清除选项
  * @param {Command} program 
  */
 function cleanOptions(program) {
@@ -135,7 +135,26 @@ module.exports = async (ctx, options) => {
         if (msg.plain[name.length] !== " ") return;
         tmpMsg = msg;
         try {
-            const cmd = msg.plain.split(" ");
+            let cmd = [];
+            let tmp = [];
+            let q;
+            msg.plain.split(" ").forEach(v => {
+                if (!q && (v.indexOf("'") === 0 || v.indexOf('"') === 0)) {
+                    q = v.indexOf("'") === 0 ? "'" : '"';
+                    const _t = v.replace(q, '');
+                    if (_t) tmp.push(_t);
+                } else if (q && v.indexOf(q) === v.length - 1) {
+                    const _t = v.replace(q, '')
+                    if (_t) tmp.push(_t);
+                    cmd.push(tmp.join(''));
+                    tmp = [];
+                    q = undefined;
+                } else if (q) {
+                    tmp.push(v);
+                } else {
+                    cmd.push(v);
+                }
+            });
             cmd.shift();
             program.parse(cmd, { from: "user" });
         } catch (err) {

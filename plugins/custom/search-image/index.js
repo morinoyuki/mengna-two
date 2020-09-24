@@ -58,9 +58,9 @@ module.exports = async (ctx, options) => {
                         }
                     }
                     if (similarity < 60) {
-                        const ascii2dCache = cache.getCache(imageMd5, 'ascii2d');
+                        const ascii2dCache = await cache.getCache(imageMd5, 'ascii2d');
                         if (ascii2dCache) {
-                            logger.success('[search-image] 使用缓存数据');
+                            logger.success('[search-image] [ascii2d] 使用缓存数据');
                             msg.reply(ascii2dCache.msg);
                         } else {
                             const a2dContent = await ascii2d(message.url, logger);
