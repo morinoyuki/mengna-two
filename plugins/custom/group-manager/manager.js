@@ -1,6 +1,5 @@
 const { default: Bot } = require("el-bot");
-const { check } = require('mirai-ts');
-const base64 = require('node-base64-image');
+const { Message, check } = require('mirai-ts');
 const fetch = require('node-fetch').default;
 const { ObjectID } = require('mongodb');
 const token = Symbol('token');
@@ -11,6 +10,8 @@ const logger = Symbol('logger');
 const ocr = Symbol('ocr');
 const api = Symbol('api');
 const cache = Symbol('cache');
+const notice = Symbol('notice');
+const admin = Symbol('admin');
 module.exports = class {
     /**
      * 管理器类
@@ -18,7 +19,8 @@ module.exports = class {
      * @param {Object} opt 
      */
     constructor(ctx, opt) {
-        const { db } = ctx;
+        const { db, el } = ctx;
+        this[admin] = el.config.admin;
         this[options] = opt;
         this[api] = ctx.mirai.api;
         if (this[options].ocr.enable) this[cache] = { i: 0 };
@@ -139,9 +141,32 @@ module.exports = class {
         }
         this[api].mute(msg.sender.group.id, msg.sender.id, (document.meta && document.meta.muteTime) || this[options].muteTime).then(res => {
             if (res.code === 0) {
-                msg.reply(`检测到关键词: ${keywordText},type: ${document.type} 予以处罚`);
+                msg.reply(`检测到关键词: ${keywordText},type: ${document.type} ObjectID: ${document._id}\n予以处罚`);
             }
         });
+        if (document.meta.notice) {
+            this[notice](msg);
+        }
+    }
+    /**
+     * 通知管理员
+     * @param {import('mirai-ts').MessageType.ChatMessage} msg 
+     */
+    async [notice](msg) {
+        if (!this[admin]) return;
+        const memberList = await this[api].memberList(msg.sender.group.id);
+        const adminList = this[admin];
+        let noticeList = [];
+        memberList.forEach(_member => {
+            adminList.forEach(_admin => {
+                if (_member.id === _admin) {
+                    noticeList.push(Message.At(_admin));
+                }
+            });
+        });
+        if (noticeList.length === 0) return;
+        noticeList.unshift(Message.Plain('过来收拾人\n'));
+        msg.reply(noticeList);
     }
     /**
      * 向数据库添加关键词

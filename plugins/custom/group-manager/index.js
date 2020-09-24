@@ -1,4 +1,5 @@
 const { default: Bot, utils } = require("el-bot");
+const { Command } = require('commander');
 const Manager = require('./manager');
 let groupManagerOptions = {
     listen: {
@@ -9,72 +10,146 @@ let groupManagerOptions = {
     ocr: {
         enable: false
     },
-    muteTime: 30 * 60
+    muteTime: 30 * 60,
+    cmdName: 'gm'
 };
+/**
+ * 
+ * @param {Command} program 
+ */
+function cleanOptions(program) {
+    const options = program.opts();
 
+    // reset option
+    Object.keys(options).forEach((key) => {
+        delete program[key];
 
+        // 重新设置默认值
+        if (program.options.length > 0) {
+            program.options.forEach((option) => {
+                if (
+                    option.defaultValue &&
+                    (option.long === `--${key}` || option.short === `-${key}`)
+                ) {
+                    program[key] = option.defaultValue;
+                }
+            });
+        }
+    });
+}
 /**
  * 简易群管系统
  * @param {Bot} ctx 
  * @param {Object} options 
  */
 module.exports = async (ctx, options) => {
-    const { mirai, user, status: { isListening } } = ctx;
+    const { mirai, logger, user, status: { isListening } } = ctx;
     utils.config.merge(groupManagerOptions, options);
-    const manager = new Manager(ctx, groupManagerOptions)
+    const manager = new Manager(ctx, groupManagerOptions);
+    let tmpMsg;
+    // modify prototype
+    Command.prototype.outputHelp = function (cb) {
+        if (!cb) {
+            cb = (passthru) => {
+                return passthru;
+            };
+        }
+        const cbOutput = cb(this.helpInformation());
+        if (
+            cbOutput &&
+            (this.parent ||
+                (ctx.mirai.curMsg).plain.trim() === "gm -h")
+        ) {
+            ctx.reply(cbOutput.trim());
+        }
+        this.emit(this._helpLongFlag);
+    };
+    const program = new Command('gm');
+    program.exitOverride();
+    program.command('addkey <keyword>')
+        .description('添加关键词')
+        .option('-r, --re', '正则表达式')
+        .option('-i, --is', '全部匹配')
+        .action(async (keyword, opt) => {
+            const msg = tmpMsg;
+            if (!user.isAllowed(msg.sender.id, true)) return;
+            try {
+                let r;
+                if (opt.is) {
+                    r = await manager.addKeyword(keyword, 'is');
+                } else if (opt.re) {
+                    r = await manager.addKeyword(keyword, 're');
+                } else {
+                    r = await manager.addKeyword(keyword, 'includes');
+                }
+                msg.reply(`Done ObjectID: ${r.insertedId}`);
+            } catch (e) {
+                msg.reply(e.message);
+            }
+        });
+    program.command('delkey <keyword>')
+        .description('删除关键词')
+        .option('-r, --re', '正则表达式')
+        .option('-i, --is', '全部匹配')
+        .action(async (keyword, opt) => {
+            const msg = tmpMsg;
+            if (!user.isAllowed(msg.sender.id, true)) return;
+            try {
+                let r;
+                if (opt.is) {
+                    r = await manager.deleteKeyword(keyword, 'is');
+                } else if (opt.re) {
+                    r = await manager.deleteKeyword(keyword, 're');
+                } else {
+                    r = await manager.deleteKeyword(keyword, 'includes');
+                }
+                msg.reply(`Done res: ${JSON.stringify(r.result)}`);
+            } catch (e) {
+                msg.reply(e.message);
+            }
+        });
+    program.command('setmeta <id>')
+        .description('设置关键词元数据')
+        .option('-m, --muteTime <number>', '禁言时间')
+        .option('-n, --notice', '通知管理员')
+        .action(async (id, opt) => {
+            const msg = tmpMsg;
+            if (!user.isAllowed(msg.sender.id, true)) return;
+            let meta = {};
+            if (opt.muteTime) {
+                meta.muteTime = opt.muteTime;
+            }
+            if (opt.notice) {
+                meta.notice = opt.notice;
+            }
+            try {
+                const r = await manager.setKeywordMeta(id, meta);
+                msg.reply(`Done res: ${JSON.stringify(r.result)}`);
+            } catch (e) {
+                msg.reply(e.message);
+            }
+        });
+    mirai.on('message', msg => {
+        const name = groupManagerOptions.cmdName;
+        if (msg.plain.slice(0, name.length) !== name) return;
+        if (msg.plain[name.length] !== " ") return;
+        tmpMsg = msg;
+        try {
+            const cmd = msg.plain.split(" ");
+            cmd.shift();
+            program.parse(cmd, { from: "user" });
+        } catch (err) {
+            if (err.code !== "commander.help" && err.exitCode) {
+                logger.error(`[gm] ${msg.plain}`);
+                msg.reply(err.message);
+            }
+        }
+        cleanOptions(program);
+    });
     mirai.on('GroupMessage', async msg => {
         // 非监控群
         if (!isListening(msg.sender, groupManagerOptions.listen)) return;
-        const cmdKeyword = msg.plain.split(' ')[0].toLowerCase().trim();
-        switch (cmdKeyword) {
-            case 'addkey':
-                if (!user.isAllowed(msg.sender.id)) {
-                    msg.reply('无权操作');
-                    return;
-                }
-                const _temp = msg.plain.slice(cmdKeyword.length).trim();
-                const [type, keyword] = _temp.split(' ');
-                try {
-                    const r = await manager.addKeyword(keyword, type);
-                    msg.reply(`Done ObjectID: ${r.insertedId}`);
-                } catch (e) {
-                    msg.reply(e.message);
-                }
-                break;
-            case 'setmeta':
-                if (!user.isAllowed(msg.sender.id)) {
-                    msg.reply('无权操作');
-                    return;
-                }
-                const _te = msg.plain.slice(cmdKeyword.length).trim();
-                const id = _te.split(' ')[0];
-                const meta = JSON.parse(_te.slice(id.length).trim());
-                try {
-                    const r = await manager.setKeywordMeta(id, meta);
-                    msg.reply(`Done res: ${JSON.stringify(r.result)}`);
-                } catch (e) {
-                    msg.reply(e.message);
-                }
-                break;
-            case 'delkey':
-                if (!user.isAllowed(msg.sender.id)) {
-                    msg.reply('无权操作');
-                    return;
-                }
-                const _t = msg.plain.slice(cmdKeyword.length).trim();
-                const [_type, _keyword] = _t.split(' ');
-                try {
-                    const r = await manager.deleteKeyword(_keyword, _type);
-                    msg.reply(`Done res: ${JSON.stringify(r.result)}`);
-
-                } catch (e) {
-                    msg.reply(e.message);
-                }
-                break;
-            default:
-                if (msg.sender.permission != 'MEMBER') return;
-                manager.check(msg);
-                break;
-        }
+        if (msg.sender.permission != 'MEMBER') return;
+        manager.check(msg);
     });
 };

@@ -6,7 +6,7 @@ const { Logger } = require('el-bot/dist/bot/logger');
 /**
  * 格式化结果
  * @param {import('ascii2d').Item} item 
- * @returns {import('mirai-ts').MessageType.MessageChain}
+ * @returns {Promise<import('mirai-ts').MessageType.MessageChain>}
  */
 async function formatResult(item) {
     let title;
