@@ -5,6 +5,8 @@ const NeteaseMusic = require('simple-netease-cloud-music');
 const { default: Bot } = require('el-bot');
 const nm = new NeteaseMusic();
 
+let qq = 0;
+
 /**
  * 获取APP内容
  * @param {any} song 
@@ -15,18 +17,21 @@ function getAppContent(song, type = '163') {
     let musicUrl;
     let preview;
     let songName;
+    let appid;
     const tag = type === 'qq' ? 'QQ音乐' : '网易云音乐'
     let ar = [];
     if (type === 'qq') {
+        appid = 100497308;
         jumpUrl = `https://i.y.qq.com/v8/playsong.html?_wv=1&songid=${song.id}`;
         musicUrl = song.url;
-        preview = `http://y.gtimg.cn/music/photo_new/T002R300x300M000${song.album.pmid}.jpg?max_age=2592000`;
+        preview = `http://y.gtimg.cn/music/photo_new/T002R300x300M000${song.album.pmid}.jpg`;
         songName = song.name;
         song.singer.forEach((v) => {
             ar = ar.concat(v.name);
         });
     } else {
-        jumpUrl = `http://music.163.com/song/${song.id}/`;
+        appid = 100495085;
+        jumpUrl = `"https://y.music.163.com/m/song?app_version=7.3.12&id=${song.id}`;
         musicUrl = `http://music.163.com/song/media/outer/url?id=${song.id}`;
         preview = song.al.picUrl;
         songName = song.name;
@@ -43,14 +48,14 @@ function getAppContent(song, type = '163') {
             token: stringRandom(32),
             type: 'normal'
         },
-        desc: ' 音乐',
-        extra: { app_type: 1, appid: 100495085 },
+        desc: '音乐',
+        extra: { app_type: 1, appid, uin: qq },
         meta: {
             music: {
                 action: '',
                 android_pkg_name: '',
                 app_type: 1,
-                appid: 100495085,
+                appid,
                 desc: ar.join('/'),
                 jumpUrl,
                 musicUrl,
@@ -85,6 +90,7 @@ async function qqMusicSearch(keyword) {
  */
 module.exports = async (ctx) => {
     const { mirai, logger } = ctx;
+    qq = ctx.el.qq;
     mirai.on('message', async (msg) => {
         const typeString = msg.plain.split(" ")[0].toLowerCase();
         const keyword = msg.plain.slice(typeString.length).trim();

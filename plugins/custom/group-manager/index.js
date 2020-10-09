@@ -138,12 +138,12 @@ module.exports = async (ctx, options) => {
             let cmd = [];
             let tmp = [];
             let q;
-            msg.plain.split(" ").forEach(v => {
+            msg.plain.split(" ").forEach((v, i, a) => {
                 if (!q && (v.indexOf("'") === 0 || v.indexOf('"') === 0)) {
                     q = v.indexOf("'") === 0 ? "'" : '"';
                     const _t = v.replace(q, '');
                     if (_t) tmp.push(_t);
-                } else if (q && v.indexOf(q) === v.length - 1) {
+                } else if (q && (v.indexOf(q) === v.length - 1 || a.length - 1 === i)) {
                     const _t = v.replace(q, '')
                     if (_t) tmp.push(_t);
                     cmd.push(tmp.join(''));
@@ -165,7 +165,7 @@ module.exports = async (ctx, options) => {
         }
         cleanOptions(program);
     });
-    mirai.on('GroupMessage', async msg => {
+    mirai.on('GroupMessage', msg => {
         // 非监控群
         if (!isListening(msg.sender, groupManagerOptions.listen)) return;
         if (msg.sender.permission != 'MEMBER') return;
