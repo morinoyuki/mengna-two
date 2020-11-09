@@ -14,7 +14,7 @@ let coolDown = {};
  * @param {String} text 
  */
 function htmlEscape(text) {
-    return text.replace(/[<>"&]/g, function (match, pos, originalText) {
+    return text.replace(/[<>"&]/g, function (match) {
         switch (match) {
             case "<": return "&lt;";
             case ">": return "&gt;";
@@ -202,6 +202,11 @@ module.exports = async (ctx) => {
                 logger.error(`[music] ${e.message}`);
                 msg.reply('失败');
             }
+        } else if (/music\.163\.com.*song\?id=\d+/i.test(msg.plain)) {
+            const netEaseId = msg.plain.match(/music\.163\.com.*song\?id=(\d+)/i)[1]
+            const result = await nm.song(netEaseId)
+            const appData = getAppContent(result.songs[0])
+            msg.reply(appData)
         }
     });
 };

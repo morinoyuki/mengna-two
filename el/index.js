@@ -7,6 +7,7 @@ module.exports = {
   // 你可以直接解析 mirai-api-http 的配置
   setting: utils.config.parse(
     resolve(__dirname, "../mirai/config/MiraiAPIHTTP/net.mamoe.mirai.api.http.config.Setting")
+    // resolve(__dirname, "../mirai/plugins/MiraiAPIHTTP/setting.yml")
   ),
   // setting: {
   //   enableWebsocket: false

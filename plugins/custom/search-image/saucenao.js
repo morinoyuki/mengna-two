@@ -1,6 +1,6 @@
-const { getImage } = require('../../utils');
-const sagiri = require('sagiri');
-const { Message } = require('mirai-ts');
+const { getImage } = require('../../utils')
+const sagiri = require('sagiri')
+const { Message } = require('mirai-ts')
 
 // 格式化saucenao结果
 async function formatResult(result) {
@@ -11,27 +11,40 @@ async function formatResult(result) {
         Message.Plain(`\n链接：${result.url}`),
         Message.Plain(`\n作者：${result.authorName || "未知"}`),
         Message.Plain('\n------------\n'),
-    ];
-    return r;
+    ]
+    return r
 }
 
-
+/**
+ * 
+ * @param {Number} maxLength 
+ * @param {String[]} token 
+ * @param {Object} options 
+ */
 module.exports = (maxLength, token, options) => {
-    const client = sagiri(token, options);
+    const client = token.map(v => {
+        return sagiri(v, options)
+    })
+    let tokenIndex = 0
     return async (url) => {
-        const result = await client(url);
-        let content = [];
-        let num = 0;
-        for (let i = 0; i < (result.length > maxLength ? maxLength : result.length); i++) {
-            if (result[0].similarity < 40) break;
-            content = content.concat(await formatResult(result[i]));
-            num++;
+        const result = await client[tokenIndex](url)
+        if (tokenIndex === client.length - 1) {
+            tokenIndex = 0
+        } else {
+            tokenIndex++
         }
-        if (content.length == 0) throw new Error('无结果');
-        content = content.concat(Message.Plain(`${num}个结果`));
+        let content = []
+        let num = 0
+        for (let i = 0; i < (result.length > maxLength ? maxLength : result.length); i++) {
+            if (result[0].similarity < 40) break
+            content = content.concat(await formatResult(result[i]))
+            num++
+        }
+        if (content.length == 0) throw new Error('无结果')
+        content = content.concat(Message.Plain(`${num}个结果`))
         return {
             content,
             similarity: result[0].similarity
-        };
-    };
+        }
+    }
 }

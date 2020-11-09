@@ -1,5 +1,5 @@
 const { utils, default: Bot } = require('el-bot');
-const { check } = require('mirai-ts');
+const { check, Message } = require('mirai-ts');
 let helpOptions = {
     match: [
         {
@@ -27,11 +27,21 @@ module.exports = (ctx, options) => {
     舔狗日记
     涩图/色图
     彩虹屁
-    骂我
+    骂我 (暂停)
     一言
+    投食
     sleep`
-                msg.reply(text)
+                msg.reply(text).then(r => console.log(r))
             }
         })
+        if (msg.plain === '投食') {
+            msg.reply(
+                [
+                    Message.Image(null, null, 'toushi/wx.jpg'),
+                    Message.Image(null, null, 'toushi/zfb.jpg'),
+                    Message.Plain('\n如果喜欢我，欢迎投食')
+                ]
+            )
+        }
     })
 }

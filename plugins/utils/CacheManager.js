@@ -79,7 +79,8 @@ class CacheManager {
                     return;
                 }
                 files.forEach(file => {
-                    fs.unlinkSync(`${dir}/${file}`);
+                    if (fs.statSync(`${dir}/${file}`).isFile())
+                        fs.unlinkSync(`${dir}/${file}`);
                 });
                 this[logger].success('[cache-manager] 已清空图片临时文件');
             });
