@@ -1,6 +1,6 @@
 const { utils, default: Bot } = require('el-bot')
 const { Message } = require('mirai-ts')
-const { getCacheManager } = require('../../utils')
+const { getCacheManager, coolDown } = require('../../utils')
 const saucenao = require('./saucenao')
 const ascii2d = require('./ascii2d')
 
@@ -61,6 +61,7 @@ module.exports = async (ctx, options) => {
     // const config = ctx.el.config
     const { mirai, logger } = ctx
     utils.config.merge(searchImage, options)
+    const cool = coolDown()
     client = saucenao(searchImage.options.results, searchImage.token, searchImage.options)
     cache = getCacheManager(ctx)
     const autoRemove = result => {
@@ -73,12 +74,20 @@ module.exports = async (ctx, options) => {
     let searchImageFlag = {}
     let A2dFlag = {}
     mirai.on('message', async (msg) => {
-        if (msg.plain.trim() === '搜图') {
+        if (msg.plain.trim() === '搜图' && cool.checkCoolDown(msg.sender.id, msg.reply)) {
             searchImageFlag[msg.sender.id.toString()] = true
-            if (msg.messageChain.length == 2) msg.reply('请发送要搜索的图片')
-        } else if (msg.plain.trim() === 'a2d' || msg.plain.trim() === 'ascii2d') {
+            cool.setCoolDown(msg.sender.id, 10 * 60)
+            if (msg.messageChain.length == 2) {
+                msg.reply('请发送要搜索的图片')
+                return
+            }
+        } else if ((msg.plain.trim() === 'a2d' || msg.plain.trim() === 'ascii2d') && cool.checkCoolDown(msg.sender.id, msg.reply)) {
+            cool.setCoolDown(msg.sender.id, 10 * 60)
             A2dFlag[msg.sender.id.toString()] = true
-            if (msg.messageChain.length == 2) msg.reply('请发送要搜索的图片')
+            if (msg.messageChain.length == 2) {
+                msg.reply('请发送要搜索的图片')
+                return
+            }
         }
         if (searchImageFlag[msg.sender.id.toString()]) {
             msg.messageChain.forEach(async (message) => {

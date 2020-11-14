@@ -3,11 +3,10 @@ const axios = require('axios').default;
 const stringRandom = require('string-random');
 const NeteaseMusic = require('simple-netease-cloud-music');
 const { default: Bot } = require('el-bot');
-const { secFormat } = require('../../utils');
+const { secFormat, coolDown } = require('../../utils');
 const nm = new NeteaseMusic();
 
 // let uin = 0;
-let coolDown = {};
 
 /**
  * 转义
@@ -119,28 +118,6 @@ async function qqMusicSearch(keyword) {
     const j = /callback\((.+)\)$/.exec(data)[1];
     return JSON.parse(j);
 }
-/**
- * 设置冷却时间
- * @param {Number} qq 
- * @param {Number} time 
- */
-function setCoolDown(qq, time) {
-    coolDown[qq.toString()] = Date.now() + (time * 1000);
-}
-/**
- * 检查冷却
- * @param {Number} qq 
- * @param {Function} reply
- */
-function checkCoolDown(qq, reply) {
-    const time = coolDown[qq.toString()] || 0;
-    if (time < Date.now()) {
-        if (time) delete coolDown[qq.toString()];
-        return true;
-    }
-    reply(`冷却中 ${secFormat((time - Date.now()) / 1000)}`);
-    return false;
-}
 
 /**
  * 点歌
@@ -149,11 +126,12 @@ function checkCoolDown(qq, reply) {
 module.exports = async (ctx) => {
     const { mirai, logger } = ctx;
     // uin = ctx.el.qq;
+    const cool = coolDown()
     mirai.on('message', async (msg) => {
         const typeString = msg.plain.split(" ")[0].toLowerCase();
         const keyword = msg.plain.slice(typeString.length).trim();
         if (typeString === '网易点歌' || typeString === '点歌') {
-            if (!checkCoolDown(msg.sender.id, msg.reply)) {
+            if (!cool.checkCoolDown(msg.sender.id, msg.reply)) {
                 return;
             }
             if (!keyword) {
@@ -168,13 +146,13 @@ module.exports = async (ctx) => {
                 }
                 const appData = getAppContent(result.songs[0]);
                 msg.reply(appData);
-                setCoolDown(msg.sender.id, 10 * 60);
+                cool.setCoolDown(msg.sender.id, 10 * 60);
             } catch (e) {
                 logger.error(`[music] ${e.message}`);
                 msg.reply('失败');
             }
         } else if (typeString === 'qq点歌') {
-            if (!checkCoolDown(msg.sender.id, msg.reply)) {
+            if (!cool.checkCoolDown(msg.sender.id, msg.reply)) {
                 return;
             }
             if (!keyword) {
@@ -197,7 +175,7 @@ module.exports = async (ctx) => {
                 song.url = data.data;
                 const appData = getAppContent(song, 'qq');
                 msg.reply(appData);
-                setCoolDown(msg.sender.id, 10 * 60);
+                cool.setCoolDown(msg.sender.id, 10 * 60);
             } catch (e) {
                 logger.error(`[music] ${e.message}`);
                 msg.reply('失败');

@@ -24,9 +24,10 @@ module.exports = (ctx, options) => {
     搜番 [...image]
     点歌/网易点歌 <keyword>
     QQ点歌 <keyword>
-    舔狗日记
+    舔狗日记/旧舔狗日记
     涩图/色图
     彩虹屁
+    神回复
     骂我 (暂停)
     一言
     投食
