@@ -42,8 +42,11 @@ module.exports = async (url, logger) => {
     let content = [];
     content = content.concat(Message.Plain('特徴検索\n'));
     try {
-        const resultb = await searchByUrl(url, 'bovw');
-        content = content.concat(await formatResult(resultb.items[0]));
+        const result = await searchByUrl(url, 'bovw');
+        for (let i = 0; i < 2; i++) {
+            const item = result.items[i];
+            content = content.concat(await formatResult(item));
+        }
     } catch (e) {
         logger.warning(e.message);
         content = content.concat(Message.Plain('失败\n'));
@@ -51,8 +54,11 @@ module.exports = async (url, logger) => {
     }
     content = content.concat(Message.Plain('色合検索\n'));
     try {
-        const resultc = await searchByUrl(url, 'color');
-        content = content.concat(await formatResult(resultc.items[0]));
+        const result = await searchByUrl(url, 'color');
+        for (let i = 0; i < 2; i++) {
+            const item = result.items[i];
+            content = content.concat(await formatResult(item));
+        }
     } catch (e) {
         logger.warning(e.message);
         content = content.concat(Message.Plain('失败\n'));

@@ -53,7 +53,7 @@ async function a2dSearch(url, imageMd5, logger) {
 }
 
 /**
- * 
+ * 搜图
  * @param {Bot} ctx 
  * @param {searchImage} options 
  */
@@ -99,13 +99,18 @@ module.exports = async (ctx, options) => {
                             saContent = [...saContent, Message.Plain('\n相似度过低 自动尝试ascii2d查询')]
                         } else if (similarity < 80) {
                             saContent = [...saContent, Message.Plain('\n相似度较低 若不对请尝试ascii2d命令进行搜索')]
+                            cool.setCoolDown(msg.sender.id, 0)
                         }
-                        msg.reply(saContent).then(v => autoRemove(v))
+                        msg.reply(saContent).then(v => autoRemove(v)).catch(v => {
+                            msg.reply(`错误:${v.message || v.msg}`)
+                        })
                     } else {
                         msg.reply('SauceNAO查询失败 自动尝试ascii2d查询')
                     }
                     if (similarity < 60) {
-                        msg.reply(await a2dSearch(message.url, imageMd5, logger)).then(v => autoRemove(v))
+                        msg.reply(await a2dSearch(message.url, imageMd5, logger)).then(v => autoRemove(v)).catch(v => {
+                            msg.reply(`错误:${v.message || v.msg}`)
+                        })
                     }
                 }
             })
@@ -114,7 +119,9 @@ module.exports = async (ctx, options) => {
             msg.messageChain.forEach(async message => {
                 if (message.type === 'Image') {
                     const imageMd5 = message.url.match(/\-([^-\/]{32})/)[1]
-                    msg.reply(await a2dSearch(message.url, imageMd5, logger)).then(v => autoRemove(v))
+                    msg.reply(await a2dSearch(message.url, imageMd5, logger)).then(v => autoRemove(v)).catch(v => {
+                        msg.reply(`错误:${v.message || v.msg}`)
+                    })
                 }
             })
             if (A2dFlag[msg.sender.id.toString()]) delete A2dFlag[msg.sender.id.toString()]

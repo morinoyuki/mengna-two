@@ -10,8 +10,8 @@ async function getImage(url) {
     let image;
     try {
         const fileName = `${stringRandom(32)}.temp`;
-        // await download(url, './mirai/data/MiraiAPIHTTP/images', { filename: fileName });
-        await download(url, './mirai/plugins/MiraiAPIHTTP/images', { filename: fileName });
+        await download(url, './mirai/data/MiraiAPIHTTP/images', { filename: fileName });
+        // await download(url, './mirai/plugins/MiraiAPIHTTP/images', { filename: fileName });
         image = Message.Image(null, null, fileName);
     } catch (e) {
         image = Message.Plain('[error]');
@@ -56,7 +56,7 @@ function coolDown() {
             if (time) delete coolDownData[qq.toString()];
             return true;
         }
-        reply(`冷却中 ${secFormat((time - Date.now()) / 1000)}`);
+        if (typeof reply === 'function') reply(`冷却中 ${secFormat((time - Date.now()) / 1000)}`);
         return false;
     }
     return {

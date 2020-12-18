@@ -25,10 +25,11 @@ module.exports = (ctx, options) => {
     点歌/网易点歌 <keyword>
     QQ点歌 <keyword>
     舔狗日记/旧舔狗日记
+    砸瓦鲁多/泷泽萝拉哒
     涩图/色图
     彩虹屁
     神回复
-    骂我 (暂停)
+    骂我/钉宫
     一言
     投食
     sleep`

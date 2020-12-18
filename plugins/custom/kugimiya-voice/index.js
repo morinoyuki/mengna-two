@@ -35,7 +35,7 @@ module.exports = ctx => {
     logger.info('[kugimiya-voice] 首次运行正在读取文件列表到缓存');
     loadFiles(logger);
     mirai.on('message', msg => {
-        if (msg.plain === '骂我') {
+        if (msg.plain === '骂我' || msg.plain === '钉宫') {
             if (cacheFiles.length) {
                 sendVoice(msg.reply);
             } else {

@@ -1,9 +1,9 @@
 const { Message } = require('mirai-ts');
 const axios = require('axios').default;
-const stringRandom = require('string-random');
+// const stringRandom = require('string-random');
 const NeteaseMusic = require('simple-netease-cloud-music');
 const { default: Bot } = require('el-bot');
-const { secFormat, coolDown } = require('../../utils');
+const { coolDown } = require('../../utils');
 const nm = new NeteaseMusic();
 
 // let uin = 0;

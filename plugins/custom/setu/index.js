@@ -34,8 +34,9 @@ function formatResult(data) {
     ]
     return r
 }
-async function getLoliconSetu(r18 = false) {
-    const { data } = await axios.get(`https://api.lolicon.app/setu/?apikey=${setuOpt.apiKey}&r18=${Number(r18)}&size1200=true`)
+async function getLoliconSetu(r18 = false, keyword) {
+    const { data } = await axios.get(`https://api.lolicon.app/setu/?apikey=${setuOpt.apiKey}&r18=${Number(r18)}&size1200=true` +
+        (keyword ? '&keyword=' + keyword : ''))
     if (data.code === 0) {
         return formatResult(data.data[0])
     } else if (data.code === 429) {
@@ -66,6 +67,11 @@ module.exports = (ctx, options) => {
         limitData = {}
     })
     let r18 = false
+    mirai.on('GroupMessage', async msg => {
+        if (msg.plain === '小亚涩图') {
+            msg.reply(await getLoliconSetu(false, encodeURI('アスナ')))
+        }
+    })
     mirai.on('message', msg => {
         if (msg.plain === 'r18开关') {
             if (ctx.user.isMaster(msg.sender.id)) {
@@ -85,7 +91,7 @@ module.exports = (ctx, options) => {
                     }
                     limitData[msg.sender.id.toString()] = (limitData[msg.sender.id.toString()] || 0) + 1
                 } else {
-                    msg.reply('你已冲死将在晚上2点复活')
+                    msg.reply('你已冲死将在晚上2点复活\n但欢迎来【喵萌次元】(www.miomoe.com)下载和分享资源')
                 }
             }
         })
