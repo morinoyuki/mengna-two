@@ -1,0 +1,631 @@
+plugins:
+  default:
+    - rss
+    - answer
+    # - cli
+    - limit
+    - forward
+    # - dev
+    # - teach
+  official:
+    # - setu
+    # - hitokoto
+    # - niubi
+  custom:
+    - ./plugins/custom/search-anime
+    - ./plugins/custom/search-image
+    - ./plugins/custom/invited-bot
+    - ./plugins/custom/kugimiya-voice
+    - ./plugins/custom/setu
+    - ./plugins/custom/music
+    - ./plugins/custom/sleep
+    - ./plugins/custom/group-manager
+    - ./plugins/custom/help
+    - ./plugins/custom/robot
+    - ./plugins/custom/code-message
+    - ./plugins/custom/jojo-nieta
+    - ./plugins/custom/gif-make
+
+# 主人
+master:
+  - 454693264
+
+# 管理
+admin:
+  - 2094727143
+  - 1178709140
+  - 823557962
+  - 540005835
+  - 196868735
+
+# 限制
+limit:
+  interval: 20000
+  count: 10
+  sender:
+    # 连续次数
+    maximum: 3
+    tooltip: 我生气了！
+    time: 2400
+
+# 搜图
+search-image:
+  token:
+    - 27b5bbc3450e354540e56852bfd5dce0b2a8b726
+    - 4542ef7e6b7461b53d4acb2b513144e13d5a1537
+    - c8b94b99b815f2613ad0f981925924a4a9c74670
+  options:
+    results: 2 # 结果数
+
+cache:
+  cron: '0 0 2 * * *'
+
+# 搜番
+search-anime:
+  token: fc0751d63c9b56b0c346ae8c4893bed576d8a2f9
+
+# 色图
+setu:
+  apiKey: 877789775f5c596fa93852
+  loliconApiGroup:
+    - 688934898
+    - 828090839
+  # proxy: https://images.weserv.nl/?url=
+  match:
+    - is: 
+      - 不够色
+      - 涩图
+      - 色图
+    - includes:
+      - 来
+      - 色图
+    - includes:
+      - 来
+      - 涩图
+
+# 帮助
+help:
+  match:
+    - is: 
+      - 帮助
+      - help
+      - 指令
+
+# 群管
+group-manager:
+  listen:
+    group:
+      - 688934898
+      - 828090839
+  ocr:
+    enable: true
+    apiKey: BVE1u85XbSHsv76WU60Pitbq
+    secretKey: 7A5evIVpx8QhdGGdtnE68bGUKei3S66E
+
+robot:
+  appid: 2126670738
+  appkey: nV5EZjybrrWwqKNY
+
+rss:
+  - name: 特摄资源更新
+    url: https://share.dmhy.org/topics/rss/sort_id/12/rss.xml
+    cron: "*/15 * * * *"
+    # customFields:
+    content:
+      - 标题：${item.title}
+      - 链接：${item.link}
+    target:
+      # friend:
+      group:
+        - 1014055660
+
+
+# 消息应答
+answer:
+  - is: 神回复
+    api: http://api.tianapi.com/txapi/godreply/index?key=cad4a30daed58e927106c1aabfebefec
+    reply: \"${data.newslist[0].title}\"\n"${data.newslist[0].content}"
+  - is:
+      - 一言
+      - 骚话
+    api: https://v1.hitokoto.cn/
+    reply: ${data.hitokoto} ——「${data.from}」
+  - is: 彩虹屁
+    api: https://chp.shadiao.app/api.php
+    reply: ${data}
+  - is:
+      - 旧舔狗日记
+      - 旧舔狗日志
+    api: http://www.somekey.cn/tiangou/random.php
+    reply: ${data.data.date} ${data.data.weather}\n${data.data.content}
+  - is:
+      - 舔狗日记
+      - 舔狗日志
+    api: http://api.tianapi.com/txapi/tiangou/index?key=cad4a30daed58e927106c1aabfebefec
+    reply: ${data.newslist[0].content}
+  - includes: 色图
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 天天色图，信不信把你变成gay图
+  - includes: 哥哥
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 臭弟弟
+  - is: 操
+    # quote: true
+    # at: true
+    reply:
+      - type: Plain
+        text: 操
+  - includes: 骂我
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 真是个抖m呢
+  - includes: 憨批
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 哈批处男真是有趣
+  - includes: 哈哈
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 笑啥 哈批
+  - includes: 老婆
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 哈批 谁是你老婆
+  - includes: 机器人坏
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 你才坏掉了
+  - includes: 透
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 别找我，去透群主
+  - includes: 叫老公
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 你在想peach
+  - includes: 主人
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 臭DD
+  - includes: 女朋友
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 汽油与火把已经准备完成，受死吧异性恋！！！
+  - includes: 你好
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 好个p
+  - includes: 呐呐
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 这就是呐呐呐雷达啊！
+  - includes: 呐
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 呐呐呐
+  - includes: 智障
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 阿库娅
+  - is: '?'
+    # quote: true
+    # at: true
+    reply:
+      - type: Plain
+        text: ¿
+  - includes: 干咯兄弟们
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 奥利给
+  - includes: 恶臭
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 哼，哼，啊啊啊啊啊啊啊
+  - re: nmsl|cnm
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 臭弟弟，我是你同母异父的姐姐
+  - includes: 做爱
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: j8都给你打断
+  - includes: 八重樱
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 嘤嘤嘤嘤嘤嘤嘤嘤
+  - includes: 老公骂我
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 好的宝贝
+  - includes: 网恋吗
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 分手割腕的那种？
+  - includes: 网恋
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 被骗8000
+  - includes: 资源
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 没有
+  - includes: 爬
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 处男说话都是那么粗鄙不堪的吗？
+  - includes: 嘤嘤嘤
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 爬
+  - includes: 龙王
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 是憨批
+  - includes: 莲华
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 扮群主
+  - includes: 莲花
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 扮群主
+  - includes: 变态
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 你才变态 你全家都是变态 很太!
+  - includes: 我可以
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: press F to enter the Tank！！！
+  - includes: wdnmd
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 真是年轻人
+  - includes: 喷个水
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 喷你一脸大姨妈
+  - includes: 我好了
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 当众打飞机，真不愧是你呢～
+  - includes: 什么番
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: jojo奇妙冒险
+  - includes: 爱你
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 别爱我 没结果
+  - includes: 种子
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: https://www.bilibili.com/video/av57748098
+  - includes: 我爱你 
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 滚粗吧单身狗
+  - includes: rbq
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 傻批
+  - includes: 小萝莉
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 啧！恋童癖给本公主滚开
+  - includes: 小屁孩
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 说谁小屁孩呢，说尼玛呢
+  - includes: 小可爱
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 逗比
+  - includes: prpr
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 四斋蒸鹅心
+  - includes: '??'
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: '??'
+  - includes: 臭弟弟
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 处男说话都是那么粗鄙不堪的吗？
+  - includes: 有没有
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 滚 没有 去百度
+  - includes: 你好紧
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: nmd也很紧
+  - includes: 那么紧
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 紧你mp
+  - includes: 作死
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 不作死就不会死
+  - includes: 梦娜来
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 我不行了
+  - includes: 我好了
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: Hentai！！！
+  - includes: 啧
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 啧个jb
+  - includes: 梦娜来张涩图
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 冲NM呢
+  - includes: 。。。。
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 说人话
+  - includes: 梦娜脱衣服
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 你先在楼下裸奔一圈
+  - includes: 鲍鱼
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 好吃
+  - includes: 资源
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 伸手的nmsl
+  - includes: 几点了
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 才八点
+  - includes: 开车
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 嘭！你没了！
+  - includes: nmsl
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 食屎拉你
+  - includes: 新人
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 慢滚不送
+  - includes: 大家好
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: RBQ好
+  - includes: ？
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: ？
+  - includes: 莲华
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 群主在换了
+  - includes: 把
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 憨批
+  - includes: 涩图
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 信不信分分钟把你变成涩图
+  - includes: 小姐姐
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 屁股撅起来
+  - includes: 给爷爬
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 臭弟弟，你说你马呢
+  - includes: 萌新
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 你萌个锤子
+  - includes: ……
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 草泥马
+  - includes: 有人吗
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 在座的都是你爸爸
+  - includes: 你们是真的吃的太饱
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 再来一口，老弟！真香！！！
+  - includes: 有铜么
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 没有，滚！
+  - includes: 给爷爬
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 嘤嘤嘤
+  - includes: 来份涩图
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 再要把你变成涩图
+  - includes: 艹
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 艹
+  - includes: 来份色图
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 性盛致灾，割以永治
+  - includes: 艹你
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 艹尼玛
+  - includes: 机器人
+    quote: true
+    at: true
+    reply:
+      - type: Plain
+        text: 叫老娘干啥
