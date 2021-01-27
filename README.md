@@ -81,7 +81,7 @@ cd mcl
 
 下载 [mirai-api-http Releases](https://github.com/project-mirai/mirai-api-http/releases) jar 包，放置于 `mcl/plugins` 文件夹。
 
-配置文件位于 `mcl/config/MiraiApiHttp/setting.yml`
+配置文件位于 `mcl/config/net.mamoe.mirai-api-http/setting.yml`
 
 最好自行修改你的 `authKey`，否则你的机器人将很可能被 [NTR](https://zh.moegirl.org/zh-hans/NTR)。
 

@@ -52,7 +52,6 @@ module.exports = async (ctx, options) => {
     mirai.on('message', async (msg) => {
         if (msg.plain.trim() === '搜番' && cool.checkCoolDown(msg.sender.id, msg.reply)) {
             searchFlag[msg.sender.id.toString()] = true;
-            cool.setCoolDown(msg.sender.id, 10 * 60);
             if (msg.messageChain.length == 2) {
                 msg.reply('请发送要搜索的截图');
                 return
@@ -78,6 +77,7 @@ module.exports = async (ctx, options) => {
                         msg.reply('识别图片类型失败');
                         return;
                     }
+                    cool.setCoolDown(msg.sender.id, 10 * 60);
                     const imageMd5 = smsg.url.match(/\-([^-\/]{32})/)[1];
                     const cacheData = await cache.getCache(imageMd5, 'anime');
                     if (cacheData) {

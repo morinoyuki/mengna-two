@@ -11,7 +11,7 @@ let cacheFiles = [];
  */
 function loadFiles(logger) {
     try {
-        cacheFiles = fs.readdirSync('./mirai/data/MiraiAPIHTTP/voices/钉宫');
+        cacheFiles = fs.readdirSync('./mcl/data/net.mamoe.mirai-api-http/voices/钉宫');
     } catch (e) {
         logger.error(`[kugimiya-voice] ${e.message}`);
     }

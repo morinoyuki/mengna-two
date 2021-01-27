@@ -1,22 +1,41 @@
 const download = require('download');
+const adultCheck = require('./adultCheck');
 const stringRandom = require('string-random');
 const { Message } = require('mirai-ts');
 const CacheManager = require('./CacheManager');
+const { default: axios } = require('axios');
+
+/**
+ * 获取广告短链接
+ * @param {string} url 
+ * @returns {Promise<string>}
+ */
+async function getAdLink(url) {
+    try {
+        const { data } = await axios.get(`https://adfoc.us/api/?key=23f9550cd4cef20ce3cb580780e74af9&url=${url}`);
+        if (data === '0')
+            return url;
+        return data;
+    } catch {
+        return url;
+    }
+}
+
 /**
  * 安全的获取图片
  * @param {String} url 
  */
 async function getImage(url) {
-    let image;
     try {
+        if (await adultCheck.submitRemoteImage(url)) {
+            return Message.Plain('[Adult]');
+        }
         const fileName = `${stringRandom(32)}.temp`;
-        await download(url, './mirai/data/MiraiAPIHTTP/images', { filename: fileName });
-        // await download(url, './mirai/plugins/MiraiAPIHTTP/images', { filename: fileName });
-        image = Message.Image(null, null, fileName);
+        await download(url, './mcl/data/net.mamoe.mirai-api-http/images', { filename: fileName });
+        return Message.Image(null, null, fileName);
     } catch (e) {
-        image = Message.Plain('[error]');
+        return Message.Plain('[error]');
     }
-    return image;
 }
 /**
  * 格式化秒数
@@ -65,6 +84,7 @@ function coolDown() {
     }
 
 }
+exports.getAdLink = getAdLink;
 exports.coolDown = coolDown;
 exports.secFormat = secFormat;
 exports.getImage = getImage;

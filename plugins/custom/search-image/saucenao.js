@@ -1,4 +1,4 @@
-const { getImage } = require('../../utils')
+const { getImage, getAdLink } = require('../../utils')
 const sagiri = require('sagiri')
 const { Message } = require('mirai-ts')
 
@@ -6,11 +6,13 @@ const { Message } = require('mirai-ts')
 async function formatResult(result) {
     const r = [
         await getImage(result.thumbnail),
-        Message.Plain(`\n相似度：${result.similarity}`),
-        Message.Plain(`\n站点：${result.site}`),
-        Message.Plain(`\n链接：${result.url}`),
-        Message.Plain(`\n作者：${result.authorName || "未知"}`),
-        Message.Plain('\n------------\n'),
+        Message.Plain(
+            `\n相似度：${result.similarity}` +
+            `\n站点：${result.site}` +
+            `\n链接：${await getAdLink(result.url)}` +
+            `\n作者：${result.authorName || "未知"}` +
+            '\n------------\n'
+        )
     ]
     return r
 }
@@ -41,7 +43,7 @@ module.exports = (maxLength, token, options) => {
             num++
         }
         if (content.length == 0) throw new Error('无结果')
-        content = content.concat(Message.Plain(`${num}个结果`))
+        content = content.concat(Message.Plain(`${num}个结果 Script by：老森`))
         return {
             content,
             similarity: result[0].similarity

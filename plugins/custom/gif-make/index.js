@@ -8,11 +8,13 @@ const idList = {
 const oldIdList = {
     oldsorry: 'sorry',
     '打工': 'dagong',
-    '沙滩': 'yanji'
+    '沙滩': 'yanji',
+    '我说的': 'jesus',
+    '伊莉雅': 'iriya'
 }
 
 /**
- * 
+ * 生成提交数据
  * @param {Number} id 
  * @param {String} s 
  */
@@ -33,7 +35,7 @@ function toOldJson(s) {
     return r
 }
 /**
- * 
+ * 获取表情
  * @param {String} name 
  * @param {String} content 
  */

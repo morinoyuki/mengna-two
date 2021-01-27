@@ -7,7 +7,7 @@ plugins:
     - forward
     # - dev
     # - teach
-  official:
+  # official:
     # - setu
     # - hitokoto
     # - niubi
@@ -25,6 +25,8 @@ plugins:
     - ./plugins/custom/code-message
     - ./plugins/custom/jojo-nieta
     - ./plugins/custom/gif-make
+    - ./plugins/custom/augur
+    - ./plugins/custom/bv-parse
 
 # 主人
 master:
@@ -67,6 +69,7 @@ search-anime:
 # 色图
 setu:
   apiKey: 877789775f5c596fa93852
+  limit: 3
   loliconApiGroup:
     - 688934898
     - 828090839

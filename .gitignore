@@ -13,7 +13,7 @@ log/
 
 # mcl
 mcl
-!mcl/config/MiraiApiHttp/setting.example.yml
+!mcl/config/net.mamoe.mirai-api-http/setting.example.yml
 
 # mirai
 mirai/

@@ -180,8 +180,11 @@ module.exports = async (ctx) => {
                 logger.error(`[music] ${e.message}`);
                 msg.reply('失败');
             }
-        } else if (/music\.163\.com.*song\?id=\d+/i.test(msg.plain)) {
-            const netEaseId = msg.plain.match(/music\.163\.com.*song\?id=(\d+)/i)[1]
+        } else if (/music\.163\.com.*song\?id=\d+|music.163.com\/.*song\/\d+/i.test(
+            (msg.messageChain.length > 1 && msg.messageChain[1].type === 'Xml') ? msg.messageChain[1].xml : msg.plain
+        )) {
+            const netEaseId = (msg.messageChain[1].type === 'Xml' ? msg.messageChain[1].xml : msg.plain)
+                .match(/music\.163\.com.*song\?id=(\d+)|music.163.com\/.*song\/(\d+)/i)[1]
             const result = await nm.song(netEaseId)
             const appData = getAppContent(result.songs[0])
             msg.reply(appData)

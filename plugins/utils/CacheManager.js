@@ -1,10 +1,11 @@
 const { default: Bot } = require("el-bot");
 const schedule = require('node-schedule');
+const ImageCache = require('./cache.schema').ImageCache;
 const fs = require('fs');
 const logger = Symbol('logger');
-const imageCache = Symbol('imageCache');
+// const imageCache = Symbol('imageCache');
 const timer = Symbol('timer');
-const dir = './mirai/data/MiraiAPIHTTP/images';
+const dir = './mcl/data/net.mamoe.mirai-api-http/images';
 
 class CacheManager {
     /**
@@ -16,30 +17,7 @@ class CacheManager {
         const config = ctx.el.config;
         const cron = (config.cache && config.cache.cron) || undefined;
         this[logger] = ctx.logger;
-        this[imageCache] = db.collection('imageCache');
-        this[imageCache].find().count().then(data => {
-            if (data == 0) { // 如果为空则初始化
-                this[imageCache].createIndex(
-                    {
-                        imageMd5: 1,
-                        date: 1,
-                        type: 1,
-                        // similarity: 1,
-                        // msg: 1,
-                    },
-                    {
-                        unique: true
-                    },
-                    err => {
-                        if (err) {
-                            this[logger].error('[cache-manager] 初始化数据库失败')
-                            throw err;
-                        }
-                        this[logger].success('[cache-manager] 初始化数据库完成');
-                    }
-                );
-            }
-        });
+
         if (cron) this[timer](cron);
     }
     /**
@@ -67,7 +45,7 @@ class CacheManager {
      * 清空缓存
      */
     flushCache() {
-        this[imageCache].deleteMany({}, err => {
+        ImageCache.deleteMany({}, err => {
             if (err) {
                 this[logger].error(`[cache-manager] ${err.message}`);
                 return;
@@ -93,7 +71,7 @@ class CacheManager {
      */
     async getCache(imageMd5, type) {
         try {
-            const r = await this[imageCache].findOne({
+            const r = await ImageCache.findOne({
                 imageMd5,
                 type
             });
@@ -111,22 +89,22 @@ class CacheManager {
      * @param {Number} similarity 
      */
     setCache(imageMd5, type, msg, similarity = 0) {
-        this[imageCache].insertOne(
+        const imageCache = new ImageCache(
             {
                 imageMd5,
-                date: Math.floor(Date.now() / 1000),
+                date: Date.now(),
                 type,
                 similarity,
                 msg
-            },
-            err => {
-                if (err) {
-                    this[logger].error(`[cache-manager] ${err.message}`);
-                    return;
-                }
-                this[logger].success("[cache-manager] 缓存成功");
             }
         );
+        imageCache.save(err => {
+            if (err) {
+                this[logger].error(`[cache-manager] ${err.message}`);
+                return;
+            }
+            this[logger].success("[cache-manager] 缓存成功");
+        })
     }
 }
 module.exports = CacheManager;

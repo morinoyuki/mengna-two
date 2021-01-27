@@ -1,9 +1,9 @@
 const { default: Bot } = require("el-bot");
 const { Message, check } = require('mirai-ts');
 const fetch = require('node-fetch').default;
-const { ObjectID } = require('mongodb');
+const { BlackKeyword } = require('./schema');
+const { Types: { ObjectId } } = require('mongoose');
 const token = Symbol('token');
-const collection = Symbol('collection');
 const options = Symbol('options');
 const mute = Symbol('mute');
 const logger = Symbol('logger');
@@ -20,38 +20,13 @@ module.exports = class {
      * @param {Object} opt 
      */
     constructor(ctx, opt) {
-        const { db, el } = ctx;
+        const { el } = ctx;
         this[admin] = el.config.admin;
         this[master] = el.config.master;
         this[options] = opt;
         this[api] = ctx.mirai.api;
         if (this[options].ocr.enable) this[cache] = { i: 0 };
         this[logger] = ctx.logger;
-        // 关键词数据库集合
-        this[collection] = db.collection('blackKeyword');
-        // 初始化数据库
-        this[collection].find().count().then(data => {
-            if (data == 0) {
-                this[collection].createIndex(
-                    {
-                        keyword: 1,
-                        type: 1
-                    },
-                    {
-                        unique: true
-                    }
-                ).then(() => {
-                    // 写入默认数据
-                    this[collection].insertOne(
-                        {
-                            keyword: { includes: ['软件', '下载'] },
-                            type: 'includes'
-                        }
-                    );
-                });
-                this[logger].success('新建Collection: blackKeyword');
-            }
-        })
     }
     /**
      * OCR识别-baidu api
@@ -92,7 +67,7 @@ module.exports = class {
      * @param {import('mirai-ts').MessageType.ChatMessage} msg 
      */
     async check(msg) {
-        const documents = await this[collection].find().toArray();
+        const documents = await BlackKeyword.find({});
         if (msg.plain) {
             for (let i = 0; i < documents.length; i++) {
                 if (check.match(msg.plain, documents[i].keyword)) { // 文本
@@ -178,34 +153,41 @@ module.exports = class {
      */
     async addKeyword(keyword, type) {
         let r;
+        let blackKeyword;
         switch (type) {
             case 'includes':
                 const keywordArray = keyword.split('|');
-                if ((await this[collection].find({ keyword: { includes: keywordArray }, type }).count()) > 0) throw new Error('已存在');
-                r = await this[collection].insertOne(
+                if ((await BlackKeyword.find({ keyword: { includes: keywordArray }, type }).count()) > 0) throw new Error('已存在');
+                blackKeyword = new BlackKeyword(
                     {
                         keyword: { includes: keywordArray },
                         type
                     }
                 );
+                await blackKeyword.save();
+                r = blackKeyword.get('id');
                 break;
             case 're':
-                if ((await this[collection].find({ keyword: { re: keyword }, type }).count()) > 0) throw new Error('已存在');
-                r = await this[collection].insertOne(
+                if ((await BlackKeyword.find({ keyword: { re: keyword }, type }).count()) > 0) throw new Error('已存在');
+                blackKeyword = new BlackKeyword(
                     {
                         keyword: { re: keyword },
                         type
                     }
                 );
+                await blackKeyword.save();
+                r = blackKeyword.get('id');
                 break;
             case 'is':
-                if ((await this[collection].find({ keyword: { is: keyword }, type }).count()) > 0) throw new Error('已存在');
-                r = await this[collection].insertOne(
+                if ((await BlackKeyword.find({ keyword: { is: keyword }, type }).count()) > 0) throw new Error('已存在');
+                blackKeyword = new BlackKeyword(
                     {
                         keyword: { is: keyword },
                         type
                     }
                 );
+                await blackKeyword.save();
+                r = blackKeyword.get('id');
                 break;
             default:
                 throw new Error('类型错误');
@@ -220,7 +202,7 @@ module.exports = class {
     async deleteKeyword(keyword, type) {
         if (type === 'includes') {
             const keywordArray = keyword.split('|');
-            const r = await this[collection].deleteOne({
+            const r = await BlackKeyword.deleteOne({
                 keyword: {
                     includes: keywordArray
                 },
@@ -228,7 +210,7 @@ module.exports = class {
             });
             return r;
         } else if (type === 'is' || type === 're') {
-            const r = await this[collection].deleteOne({
+            const r = await BlackKeyword.deleteOne({
                 keyword: {
                     [type]: keyword
                 },
@@ -244,8 +226,8 @@ module.exports = class {
      * @param {Object} meta 
      */
     async setKeywordMeta(id, meta) {
-        const _id = new ObjectID(id);
-        const r = await this[collection].updateOne({ _id }, { $set: { meta } });
+        const _id = ObjectId(id);
+        const r = await BlackKeyword.updateOne({ _id }, { $set: { meta } });
         return r;
     }
 };

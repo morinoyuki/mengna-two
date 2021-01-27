@@ -1,2 +1,5 @@
-var test = 'http://gchat.qpic.cn/gchatpic_new/454693264/828090839-2798905367-89AB6CC5FFFF3B5CEE15B970135E3B66/0?term=2';
-console.log(test.match(/\-([^-\/]{32})/));
+const adultCheck = require('../plugins/utils/adultCheck').submitRemoteImage
+
+adultCheck('https://pbs.twimg.com/media/EhEap8DU0AA0Z7k?format=jpg&name=900x900').then(bool => {
+    console.log(bool)
+})

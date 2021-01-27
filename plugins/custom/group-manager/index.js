@@ -82,7 +82,7 @@ module.exports = async (ctx, options) => {
                 } else {
                     r = await manager.addKeyword(keyword, 'includes');
                 }
-                msg.reply(`Done ObjectID: ${r.insertedId}`);
+                msg.reply(`Done ObjectID: ${r}`);
             } catch (e) {
                 msg.reply(e.message);
             }
@@ -103,7 +103,7 @@ module.exports = async (ctx, options) => {
                 } else {
                     r = await manager.deleteKeyword(keyword, 'includes');
                 }
-                msg.reply(`Done res: ${JSON.stringify(r.result)}`);
+                msg.reply(`Done res: ${JSON.stringify(r)}`);
             } catch (e) {
                 msg.reply(e.message);
             }
@@ -124,7 +124,7 @@ module.exports = async (ctx, options) => {
             }
             try {
                 const r = await manager.setKeywordMeta(id, meta);
-                msg.reply(`Done res: ${JSON.stringify(r.result)}`);
+                msg.reply(`Done res: ${JSON.stringify(r)}`);
             } catch (e) {
                 msg.reply(e.message);
             }

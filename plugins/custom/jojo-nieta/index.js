@@ -23,7 +23,7 @@ module.exports = (ctx, options) => {
     /**
     * nieta执行器
     * @param {Array} nieta 
-    * @param {Object} msg
+    * @param {*} msg
     */
     const runNieta = async (nieta, msg) => {
         for (let i = 0; i < nieta.length; i++) {
@@ -41,10 +41,12 @@ module.exports = (ctx, options) => {
                     await msg.reply([Message.Xml(nieta[i].content)])
                     break
                 case 'mute':
-                    mirai.api.muteAll(msg.sender.group.id)
+                    if (msg.sender.group.permission !== 'MEMBER')
+                        mirai.api.muteAll(msg.sender.group.id)
                     break
                 case 'unmute':
-                    mirai.api.unmuteAll(msg.sender.group.id)
+                    if (msg.sender.group.permission !== 'MEMBER')
+                        mirai.api.unmuteAll(msg.sender.group.id)
                     break
                 default:
                     break

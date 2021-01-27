@@ -1,5 +1,5 @@
 const { searchByUrl } = require('ascii2d');
-const { getImage } = require('../../utils');
+const { getImage, getAdLink } = require('../../utils');
 const { Message } = require('mirai-ts');
 const { Logger } = require('el-bot/dist/bot/logger');
 
@@ -9,9 +9,7 @@ const { Logger } = require('el-bot/dist/bot/logger');
  * @returns {Promise<import('mirai-ts').MessageType.MessageChain>}
  */
 async function formatResult(item) {
-    let title;
-    let type;
-    let url;
+    let title, type, url;
     if (item.source) {
         title = item.source.title;
         type = item.source.type;
@@ -20,15 +18,15 @@ async function formatResult(item) {
         title = item.externalInfo.content.title;
         type = item.externalInfo.content.type;
         url = item.externalInfo.content.url;
-    } else {
-        title, type, url = '未知';
     }
     const r = [
         await getImage(item.thumbnailUrl),
-        Message.Plain(`\n标题：${title}`),
-        Message.Plain(`\n站点：${type}`),
-        Message.Plain(`\n链接：${url}`),
-        Message.Plain('\n------------\n'),
+        Message.Plain(
+            `\n标题：${title || '未知'}` +
+            `\n站点：${type || '未知'}` +
+            `\n链接：${url ? await getAdLink(url) : '未知'}` +
+            '\n------------\n'
+        ),
     ];
     return r;
 }

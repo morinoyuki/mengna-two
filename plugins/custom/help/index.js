@@ -24,6 +24,7 @@ module.exports = (ctx, options) => {
     搜番 [...image]
     点歌/网易点歌 <keyword>
     QQ点歌 <keyword>
+    占卜 <augur>
     舔狗日记/旧舔狗日记
     砸瓦鲁多/泷泽萝拉哒
     涩图/色图

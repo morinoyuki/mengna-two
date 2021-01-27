@@ -13,7 +13,7 @@ module.exports = (ctx) => {
                 mirai.api.mute(qq.group.id, qq.id, 8 * 60 * 60)
                 msg.reply('口球舒服吗')
             } else if (qq.group.permission === 'MEMBER') {
-                msg.reply('无管理员权限')
+                msg.reply('无管理员权限 请联系群主给我')
             } else {
                 msg.reply('这是狗群员专用口球，你不能戴。')
             }
