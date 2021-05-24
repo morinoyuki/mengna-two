@@ -4,7 +4,7 @@ plugins:
     - answer
     # - cli
     - limit
-    - forward
+    # - forward
     # - dev
     # - teach
   # official:
@@ -69,6 +69,7 @@ search-anime:
 # 色图
 setu:
   apiKey: 877789775f5c596fa93852
+  resetDomain: '39.98.148.66'
   limit: 3
   loliconApiGroup:
     - 688934898
@@ -146,6 +147,72 @@ answer:
       - 舔狗日志
     api: http://api.tianapi.com/txapi/tiangou/index?key=cad4a30daed58e927106c1aabfebefec
     reply: ${data.newslist[0].content}
+  - listen: 
+      - 3580562304
+    includes:
+      - 只是
+      - 把你
+      - 当朋友
+    at: true
+    reply:
+      - type: Plain
+        text: 所以只能杀死你了呢，这样你只能给我看，只有我才能看到可爱的你 。
+    else:
+      - type: Plain
+        text: 正好老娘也没把你当人
+  - listen: 
+      - 3580562304
+    includes:
+      - 不喜欢你
+    at: true
+    reply:
+      - type: Plain
+        text: 不喜欢我么？那就杀死吧！ 没关系，只要在身边就可以了，无论以什么形式都可以；活着也好， 死掉也好，都可以。
+    else:
+      - type: Plain
+        text: 很好
+  - listen: 
+      - 3580562304
+    includes:
+      - 你喜欢谁
+    at: true
+    reply:
+      - type: Plain
+        text: 我喜欢纱和酱o(*≧▽≦)ツ！无论是脸，声音，手指，皮肤，四肢，毛发，我都喜欢。目前正在计划如何把纱和酱绑架到地下室，让纱和酱只属于我一个人。 （由乃.jpg）
+  - listen: 
+      - 3580562304
+    includes:
+      - 你平常
+      - 为什么
+      - 毒舌冷漠
+    at: true
+    reply:
+      - type: Plain
+        text: 才……才不是因为和你说话就害羞了，绝对没有！
+  - listen: 
+      - 3580562304
+    includes:
+      - 群里哪对
+      - 天造地设
+    at: true
+    reply:
+      - type: Plain
+        text: 当然是我和纱和酱，不管是我是父亲大人的孩子，纱和酱是父亲大人的女仆，还是其他什么的，我和纱和酱绝对是应该喜结连理的，这是命中注定！
+  - listen: 
+      - 3580562304
+    includes: 自我介绍
+    at: true
+    reply:
+      - type: Plain
+        text: 我是父亲大人所创造出来的群聊虚拟偶像兼管理，目前还不成熟，小女子不才，请多多关照，啾ღ(✞╹◡╹✞)ற
+  - listen: 
+      - 3580562304
+    includes:
+      - 告白
+    at: true
+    reply:
+      - type: Plain
+        text: 你所前进的动力，用我的言语来给予。慰藉，痛骂，爱也好，即便是憎恨也行，我都会为你而竭尽所能。请让我倾尽全力。你应该喜欢努力的女孩子的吧？对于你来说，我是必要的。以你一个人，是抓不住未来的。其他人不行，只有我才是最与你相匹配的女孩子啊。——对于你来说，我是必要的，我的心，已经只有你能够满足了。【艾姬多娜.jpg】
   - includes: 色图
     quote: true
     at: true
@@ -368,12 +435,6 @@ answer:
     reply:
       - type: Plain
         text: jojo奇妙冒险
-  - includes: 爱你
-    quote: true
-    at: true
-    reply:
-      - type: Plain
-        text: 别爱我 没结果
   - includes: 种子
     quote: true
     at: true

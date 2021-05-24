@@ -1,8 +1,12 @@
 const { default: Axios } = require("axios")
 const { default: Bot } = require("el-bot")
+const axiosCookieJarSupport = require('axios-cookiejar-support').default
+const tough = require('tough-cookie')
 const FromData = require('form-data')
 const { JSDOM } = require('jsdom')
-
+const stringRandom = require('string-random')
+const cookieJar = new tough.CookieJar()
+const url = 'https://cn.shindanmaker.com/'
 const list = {
     '二次元人设': 683217,
     '变态程度': 1032909,
@@ -19,28 +23,51 @@ const list = {
     '看了群主女装': 476023,
     '地牢探险': 905828
 }
+axiosCookieJarSupport(Axios)
+
+async function getToken() {
+    const { data } = await Axios.get(url, {
+        jar: cookieJar,
+        withCredentials: true
+    })
+    const { window: { document } } = new JSDOM(data)
+    const token = document.querySelector('meta[name="csrf-token"]').content
+    return token
+}
+
 async function getAugur(id, name) {
     try {
         const formData = new FromData()
-        formData.append('u', name)
-        const { data } = await Axios.post('https://cn.shindanmaker.com/' + id, formData, { headers: formData.getHeaders() })
-
+        const token = await getToken()
+        formData.append('_token', token)
+        formData.append('name', name)
+        formData.append('hiddenName', '无名的' + stringRandom(1, {
+            numbers: false,
+            letters: 'ABCDEFGHIJKLMNOPQRSTUVWSYZ'
+        }))
+        const headers = formData.getHeaders()
+        const { data } = await Axios.post(url + id, formData, {
+            headers,
+            jar: cookieJar,
+            withCredentials: true
+        })
         const { window: { document } } = new JSDOM(data)
-        const result = document.querySelector('.result2').textContent
-        const content = result.replace('<br>', '\n').replace(/<.+>/ig, '').trim()
+        const result = document.querySelector('#shindanResultContent').innerHTML
+        const content = result.replace(/<br>/g, '\n').replace(/<[a-z/="-_ ]+>/ig, '').trim()
+        cookieJar.removeAllCookiesSync()
         return content
-    } catch {
-        return '占卜数据读取失败'
+    } catch (e) {
+        return '占卜数据读取失败 ' + e.message
     }
-
 }
 
 /**
  * 占卜
  * @param {Bot} ctx 
  */
-module.exports = ctx => {
+module.exports = async ctx => {
     const { mirai } = ctx
+
     mirai.on('message', async msg => {
         const keyword = msg.plain.split(' ')[0].toLowerCase()
         if (msg.plain === '占卜') {

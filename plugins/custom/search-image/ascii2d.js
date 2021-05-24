@@ -1,11 +1,11 @@
-const { searchByUrl } = require('ascii2d');
+const { searchByUrl } = require('../../module/ascii2d');
 const { getImage, getAdLink } = require('../../utils');
 const { Message } = require('mirai-ts');
 const { Logger } = require('el-bot/dist/bot/logger');
 
 /**
  * 格式化结果
- * @param {import('ascii2d').Item} item 
+ * @param {import('../../module/ascii2d').Item} item 
  * @returns {Promise<import('mirai-ts').MessageType.MessageChain>}
  */
 async function formatResult(item) {

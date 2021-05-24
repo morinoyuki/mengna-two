@@ -140,13 +140,13 @@ module.exports = async (ctx) => {
             }
             try {
                 const { result } = await nm.search(keyword);
-                if (result.songCount === 0) {
+                if (!result.songCount) {
                     msg.reply('搜索不到');
                     return;
                 }
                 const appData = getAppContent(result.songs[0]);
                 msg.reply(appData);
-                cool.setCoolDown(msg.sender.id, 10 * 60);
+                cool.setCoolDown(msg.sender.id, 5 * 60);
             } catch (e) {
                 logger.error(`[music] ${e.message}`);
                 msg.reply('失败');
@@ -161,7 +161,7 @@ module.exports = async (ctx) => {
             }
             try {
                 const r = await qqMusicSearch(keyword);
-                if (r.data.song.curnum === 0) {
+                if (!r.data.song.curnum) {
                     msg.reply('搜索不到');
                     return;
                 }
@@ -171,11 +171,14 @@ module.exports = async (ctx) => {
                         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
                     }
                 });
+                if (!data) {
+                    throw new Error('音频地址为空');
+                }
                 logger.info(`[music] QQ音频地址:${data.data}`);
                 song.url = data.data;
                 const appData = getAppContent(song, 'qq');
                 msg.reply(appData);
-                cool.setCoolDown(msg.sender.id, 10 * 60);
+                cool.setCoolDown(msg.sender.id, 5 * 60);
             } catch (e) {
                 logger.error(`[music] ${e.message}`);
                 msg.reply('失败');

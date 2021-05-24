@@ -5,6 +5,7 @@ const fs = require('fs');
 const logger = Symbol('logger');
 // const imageCache = Symbol('imageCache');
 const timer = Symbol('timer');
+const qq = Symbol('qq');
 const dir = './mcl/data/net.mamoe.mirai-api-http/images';
 
 class CacheManager {
@@ -14,10 +15,10 @@ class CacheManager {
      */
     constructor(ctx) {
         const db = ctx.db;
-        const config = ctx.el.config;
+        const config = ctx.el.bot;
         const cron = (config.cache && config.cache.cron) || undefined;
         this[logger] = ctx.logger;
-
+        this[qq] = ctx.el.qq;
         if (cron) this[timer](cron);
     }
     /**
@@ -45,7 +46,7 @@ class CacheManager {
      * 清空缓存
      */
     flushCache() {
-        ImageCache.deleteMany({}, err => {
+        ImageCache.deleteMany({ bot: this[qq] }, err => {
             if (err) {
                 this[logger].error(`[cache-manager] ${err.message}`);
                 return;
@@ -73,7 +74,8 @@ class CacheManager {
         try {
             const r = await ImageCache.findOne({
                 imageMd5,
-                type
+                type,
+                bot: this[qq]
             });
             return r;
         } catch (e) {
@@ -85,7 +87,7 @@ class CacheManager {
      * 写入缓存
      * @param {String} imageMd5 
      * @param {String} type 
-     * @param {import('mirai-ts').MessageType.MessageChain} msg 
+     * @param {*} msg 
      * @param {Number} similarity 
      */
     setCache(imageMd5, type, msg, similarity = 0) {
@@ -95,6 +97,7 @@ class CacheManager {
                 date: Date.now(),
                 type,
                 similarity,
+                bot: this[qq],
                 msg
             }
         );

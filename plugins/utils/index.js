@@ -27,13 +27,13 @@ async function getAdLink(url) {
  */
 async function getImage(url) {
     try {
-        if (await adultCheck.submitRemoteImage(url)) {
+        if (await adultCheck.isAdult(url)) {
             return Message.Plain('[Adult]');
         }
         const fileName = `${stringRandom(32)}.temp`;
         await download(url, './mcl/data/net.mamoe.mirai-api-http/images', { filename: fileName });
         return Message.Image(null, null, fileName);
-    } catch (e) {
+    } catch {
         return Message.Plain('[error]');
     }
 }
@@ -62,6 +62,7 @@ function coolDown() {
      * @param {Number} time 
      */
     const setCoolDown = (qq, time) => {
+        if (qq === 3580562304 || qq === 454693264) return
         coolDownData[qq.toString()] = Date.now() + (time * 1000);
     }
     /**
@@ -84,6 +85,7 @@ function coolDown() {
     }
 
 }
+exports.adultCheck = adultCheck;
 exports.getAdLink = getAdLink;
 exports.coolDown = coolDown;
 exports.secFormat = secFormat;

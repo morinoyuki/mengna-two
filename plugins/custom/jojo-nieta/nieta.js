@@ -2,47 +2,47 @@ module.exports = {
     "砸瓦鲁多": [
         {
             type: "record",
-            file: "jojo\\jojo_1.amr",
+            file: "jojo/jojo_1.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\jojo_2.amr",
+            file: "jojo/jojo_2.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\jojo_3.amr",
+            file: "jojo/jojo_3.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\jojo_4.amr",
+            file: "jojo/jojo_4.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\jojo_5.amr",
+            file: "jojo/jojo_5.amr",
             wait: 0
         },
         {
             type: "image",
-            file: "jojo\\世界vs白金.gif",
+            file: "jojo/世界vs白金.gif",
             wait: 60 * 100
         },
         {
             type: "image",
-            file: "jojo\\砸瓦鲁多.jpg",
+            file: "jojo/砸瓦鲁多.jpg",
             wait: 60 * 50
         },
         {
             type: "record",
-            file: "jojo\\jojo_6.amr",
+            file: "jojo/jojo_6.amr",
             wait: 60 * 100
         },
         {
             type: "image",
-            file: "jojo\\To Be Continued.jpg",
+            file: "jojo/To Be Continued.jpg",
             wait: 60 * 50
         }
     ],
@@ -53,22 +53,22 @@ module.exports = {
         },
         {
             type: "record",
-            file: "jojo\\声音1.amr",
+            file: "jojo/声音1.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\声音2.amr",
+            file: "jojo/声音2.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\声音3.amr",
+            file: "jojo/声音3.amr",
             wait: 60
         },
         {
             type: "image",
-            file: "jojo\\theworld.jpg",
+            file: "jojo/theworld.jpg",
             wait: 60
         },
         {
@@ -77,62 +77,62 @@ module.exports = {
         },
         {
             type: "record",
-            file: "jojo\\声音4.amr",
+            file: "jojo/声音4.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\声音5.amr",
+            file: "jojo/声音5.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\声音6.amr",
+            file: "jojo/声音6.amr",
             wait: 60
         },
         {
             type: "image",
-            file: "jojo\\yaluji.gif",
+            file: "jojo/yaluji.gif",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\声音7.amr",
+            file: "jojo/声音7.amr",
             wait: 60
         },
         {
             type: "image",
-            file: "jojo\\vs.jpg",
+            file: "jojo/vs.jpg",
             wait: 60 * 50
         },
         {
             type: "record",
-            file: "jojo\\声音8.amr",
+            file: "jojo/声音8.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\声音9.amr",
+            file: "jojo/声音9.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\声音10.amr",
+            file: "jojo/声音10.amr",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\声音11.amr",
+            file: "jojo/声音11.amr",
             wait: 60
         },
         {
             type: "image",
-            file: "jojo\\muda.gif",
+            file: "jojo/muda.gif",
             wait: 60 * 100
         },
         {
             type: "record",
-            file: "jojo\\声音12.amr",
+            file: "jojo/声音12.amr",
             wait: 60
         },
         {
@@ -141,7 +141,7 @@ module.exports = {
         },
         {
             type: "image",
-            file: "jojo\\timestart.jpg",
+            file: "jojo/timestart.jpg",
             wait: 0
         },
     ]

@@ -3,6 +3,7 @@ const { Message, check } = require('mirai-ts');
 const fetch = require('node-fetch').default;
 const { BlackKeyword } = require('./schema');
 const { Types: { ObjectId } } = require('mongoose');
+const { adultCheck: adult } = require('../../utils');
 const token = Symbol('token');
 const options = Symbol('options');
 const mute = Symbol('mute');
@@ -13,6 +14,9 @@ const cache = Symbol('cache');
 const notice = Symbol('notice');
 const admin = Symbol('admin');
 const master = Symbol('master');
+const adultOn = Symbol('adult');
+const adultCache = Symbol('adultCache');
+const adultCheck = Symbol('adultCheck');
 module.exports = class {
     /**
      * 管理器类
@@ -21,12 +25,39 @@ module.exports = class {
      */
     constructor(ctx, opt) {
         const { el } = ctx;
-        this[admin] = el.config.admin;
-        this[master] = el.config.master;
+        this[admin] = el.bot.admin;
+        this[master] = el.bot.master;
         this[options] = opt;
         this[api] = ctx.mirai.api;
         if (this[options].ocr.enable) this[cache] = { i: 0 };
+        this[adultCache] = { i: 0 }
+        this[adultOn] = false
         this[logger] = ctx.logger;
+    }
+    /**
+     * 涩图检查
+     * @param {string} url 图片地址
+     * @returns 
+     */
+    async [adultCheck](url) {
+        const md5 = url.match(/\-([^-\/]{32})/)[1];
+        if (this[adultCache][md5] !== undefined) return this[adultCache][md5];
+        if (this[adultCache].i >= 500) this[adultCache] = { i: 0 };
+        try {
+            const data = await adult.getData(url);
+            this[logger].info('[adult] 色情指数：' + data.predictions.adult);
+            if (data.predictions.adult >= 80) {
+                this[adultCache][md5] = true;
+                this[adultCache].i++;
+                return true;
+            }
+            this[adultCache][md5] = false;
+            this[adultCache].i++;
+            return false;
+        } catch {
+            this[logger].error('[adult] 数据获取失败')
+            return false;
+        }
     }
     /**
      * OCR识别-baidu api
@@ -75,6 +106,19 @@ module.exports = class {
                     return true;
                 }
             }
+        }
+        // 涩图
+        if (this[adultOn]) {
+            msg.messageChain.forEach(async smsg => {
+                if (smsg.type === 'Image') {
+                    if (await this[adultCheck](smsg.url)) {
+                        this[api].mute(msg.sender.group.id, msg.sender.id, 30 * 60);
+                        msg.reply('检测到涩图 封禁半小时 ver.alpha');
+                        this[notice](msg);
+                        return true;
+                    }
+                }
+            });
         }
         // OCR
         if (!this[options].ocr.enable) return false;
@@ -229,5 +273,13 @@ module.exports = class {
         const _id = ObjectId(id);
         const r = await BlackKeyword.updateOne({ _id }, { $set: { meta } });
         return r;
+    }
+    /**
+     * 成人图片检查开关
+     * @param {boolean} on 
+     */
+    adultCheckSwitch() {
+        this[adultOn] = !this[adultOn];
+        return this[adultOn] ? 'on' : 'off';
     }
 };

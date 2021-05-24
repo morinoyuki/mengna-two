@@ -43,6 +43,7 @@ function cleanOptions(program) {
  * @param {Object} options 
  */
 module.exports = async (ctx, options) => {
+    if (!ctx.db) return
     const { mirai, logger, user, status: { isListening } } = ctx;
     utils.config.merge(groupManagerOptions, options);
     const manager = new Manager(ctx, groupManagerOptions);
@@ -128,6 +129,14 @@ module.exports = async (ctx, options) => {
             } catch (e) {
                 msg.reply(e.message);
             }
+        });
+    program.command('checkimage')
+        .description('检查涩图')
+        .action(() => {
+            const msg = tmpMsg;
+            if (!user.isAllowed(msg.sender.id, true)) return;
+            const r = manager.adultCheckSwitch();
+            msg.reply(r);
         });
     mirai.on('message', msg => {
         const name = groupManagerOptions.cmdName;

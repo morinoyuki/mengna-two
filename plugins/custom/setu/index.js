@@ -7,6 +7,7 @@ const { Message, check } = require('mirai-ts');
 
 let setuOpt = {
     apiKey: '',
+    resetDomain: '',
     // proxy: "https://images.weserv.nl/?url=",
     loliconApiGroup: [],
     limit: 3,
@@ -28,37 +29,53 @@ async function formatResult(data) {
     if (setuOpt.proxy) data.url = setuOpt.proxy + data.url
     const r = [
         [
-            Message.FlashImage(null, data.url)
+            Message.Image(null, data.url)
         ],
         [
             Message.Plain(
                 `标题: ${data.title}` +
-                `\nP站: ${await getAdLink('https://www.pixiv.net/artworks/' + data.pid)}`
-                // `\nTAG: ${data.tags.join()}`
+                `\nP站: ${await getAdLink('https://www.pixiv.net/artworks/' + data.pid)}` +
+                // `\nP站: https://www.pixiv.net/artworks/${data.pid}` +
+                `\nTAG: ${data.tags.join()}`
+                // '\n提示：如要原图请到上方地址获取'
             )
         ]
     ]
     return r
 }
+async function getSetu() {
+    const { data } = await axios.get('https://el-bot-api.vercel.app/api/setu')
+    return await formatResult(data)
+}
+
 async function getLoliconSetu(r18 = false, keyword) {
     const { data } = await axios.get(`https://api.lolicon.app/setu/?apikey=${setuOpt.apiKey}&r18=${Number(r18)}&size1200=true` +
         (keyword ? '&keyword=' + keyword : ''))
     if (data.code === 0) {
         return await formatResult(data.data[0])
     } else if (data.code === 429) {
-        return '总额度已达到上限'
+        return await getSetu()
     } else {
         return '未知错误 code: ' + data.code
     }
 }
-async function getSetu() {
-    const { data } = await axios.get('https://el-bot-api.vercel.app/api/setu')
-    return await formatResult(data)
 
-}
 function checkLimit(sender) {
     return limitData[sender.id.toString()] === undefined ||
         limitData[sender.id.toString()].num < setuOpt.limit
+}
+/**
+ * 
+ * @param {*} msg 
+ * @param {Boolean} lolicon 
+ * @param {Boolean} r18 
+ */
+async function sendSetu(msg, lolicon, r18) {
+    const result = await (lolicon ? getLoliconSetu(r18) : getSetu())
+    const r = await msg.reply(result[0])
+    msg.reply(result[1])
+    return r
+    // msg.reply([Message.Quote(r.messageId), ...result[1]])
 }
 
 /**
@@ -67,15 +84,22 @@ function checkLimit(sender) {
  * @param {setuOpt} options 
  */
 module.exports = (ctx, options) => {
-    const { mirai, webhook } = ctx
+    const { mirai, logger, webhook } = ctx
     config.merge(setuOpt, options)
 
     schedule.scheduleJob(setuOpt.cron, () => {
         limitData = {}
     })
 
+    const autoRemove = result => {
+        if (result.code === 0) setTimeout(() => {
+            mirai.api.recall(result.messageId).then(r => {
+                if (r.code === 0) logger.success('[setu] 成功撤回: ' + result.messageId)
+            })
+        }, (2 * 60 * 1000) - 5000)
+    }
 
-    webhook.on('setu',
+    if (webhook.config.enable) webhook.on('setu',
         /**
          * 清零
          * @param {*} data 
@@ -90,15 +114,11 @@ module.exports = (ctx, options) => {
             } else {
                 res.end('错误')
             }
-
-        })
+        }
+    )
 
     let r18 = false
-    mirai.on('GroupMessage', async msg => {
-        if (msg.plain === '小亚涩图') {
-            msg.reply(await getLoliconSetu(false, encodeURI('アスナ')))
-        }
-    })
+
     mirai.on('message', msg => {
         if (msg.plain === 'r18开关') {
             if (ctx.user.isMaster(msg.sender.id)) {
@@ -116,17 +136,18 @@ module.exports = (ctx, options) => {
                     else
                         limitData[msg.sender.id.toString()].num++
 
-                    if (msg.type === 'GroupMessage' && setuOpt.loliconApiGroup.includes(msg.sender.group.id)) {
-                        const result = await getLoliconSetu(r18)
-                        await msg.reply(result[0])
-                        msg.reply(result[1])
+                    if (ctx.el.qq === 1005432229) {
+                        if (msg.type === 'GroupMessage' && setuOpt.loliconApiGroup.includes(msg.sender.group.id)) {
+                            sendSetu(msg, true, r18).then(autoRemove)
+                        } else {
+                            sendSetu(msg, false, false).then(autoRemove)
+                        }
                     } else {
-                        const result = await getSetu(r18)
-                        await msg.reply(result[0])
-                        msg.reply(result[1])
+                        sendSetu(msg, true, false).then(autoRemove)
+
                     }
-                } else if (!limitData[msg.sender.id.toString()].reset) {
-                    msg.reply(`你已冲死将在晚上2点复活 或是访问：${await getAdLink(`http://39.98.148.66:7777/?type=setu&qq=${msg.sender.id}&code=${limitData[msg.sender.id.toString()].code}`)} 清零`)
+                } else if (!limitData[msg.sender.id.toString()].reset && webhook.config.enable) {
+                    msg.reply(`你已冲死将在晚上2点复活 或是访问：${await getAdLink(`http://${setuOpt.resetDomain}:${webhook.config.port}/?type=setu&qq=${msg.sender.id}&code=${limitData[msg.sender.id.toString()].code}`)} 复活`)
                 } else {
                     msg.reply('你已再起不能将在晚上2点复活')
                 }
