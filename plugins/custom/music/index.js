@@ -3,25 +3,11 @@ const axios = require('axios').default;
 // const stringRandom = require('string-random');
 const NeteaseMusic = require('simple-netease-cloud-music');
 const { default: Bot } = require('el-bot');
+const qqMusic = require('qq-music-api');
 const { coolDown } = require('../../utils');
+qqMusic.setCookie('_qpsvr_localtk=0.3749926805038728;euin=7e4P7wEiowCP;fqm_pvqid=d233841b-edbe-4b61-b8f3-251ce71a29d3;fqm_sessionid=126c5718-d273-4bfa-bff5-b3632fe8a22d;login_type=1;pgv_info=ssid=s2971326624;pgv_pvid=2715866681;psrf_access_token_expiresAt=1636955172;psrf_musickey_createtime=1629179172;psrf_qqaccess_token=080354453C2EEEA10E7B84C3E5EDD0B3;psrf_qqopenid=D7A3B220BA4CAF9F14C0904862C5662A;psrf_qqrefresh_token=72C073E6EE7708FDD9FEB2F6C0E69E3A;psrf_qqunionid=;ptcz=4d540b988a3631c647dfe9e7dcd0c7e7080157982759db0c8d93ff333241a070;qm_keyst=Q_H_L_2GIJR460eeO-HvRFeqhd8lec3NcKcetxH8NOUuFvgk8TeoEjMyZx2lo2rxN3rZ5;qqmusic_key=Q_H_L_2GIJR460eeO-HvRFeqhd8lec3NcKcetxH8NOUuFvgk8TeoEjMyZx2lo2rxN3rZ5;RK=uKIo39JuQr;tmeLoginType=2;uin=454693264;wxopenid=;wxrefresh_token=;wxunionid=;qm_keyst=Q_H_L_2GIJR460eeO-HvRFeqhd8lec3NcKcetxH8NOUuFvgk8TeoEjMyZx2lo2rxN3rZ5;ts_last=y.qq.com/n/ryqq/songDetail/004ZGtR50HAuAj;ts_refer=ADTAGh5_playsong;ts_uid=5267705280;')
 const nm = new NeteaseMusic();
 
-// let uin = 0;
-
-/**
- * 转义
- * @param {String} text 
- */
-function htmlEscape(text) {
-    return text.replace(/[<>"&]/g, function (match) {
-        switch (match) {
-            case "<": return "&lt;";
-            case ">": return "&gt;";
-            case "&": return "&amp;";
-            case "\"": return "&quot;";
-        }
-    });
-}
 /**
  * 获取APP内容
  * @param {any} song 
@@ -31,19 +17,16 @@ function getAppContent(song, type = '163') {
     let jumpUrl;
     let musicUrl;
     let preview;
-    let songName;
+    let title;
     let appid;
-    const tag = type === 'qq' ? 'QQ音乐' : '网易云音乐';
+    const kind = type === 'qq' ? 'QQMusic' : 'NeteaseCloudMusic';
     let ar;
-    let xml;
-    let icon = '';
     if (type === 'qq') {
         appid = 1101079856;
         jumpUrl = `https://i.y.qq.com/v8/playsong.html?_wv=1&songid=${song.id}&souce=qqshare&source=qqshare&ADTAG=qqshar`;
         musicUrl = song.url;
         preview = `http://y.gtimg.cn/music/photo_new/T002R300x300M000${song.album.pmid}.jpg`;
-        songName = song.name.length > 27 ? song.name.substring(0, 27) + '...' : song.name;
-        icon = 'https://i.gtimg.cn/open/app_icon/01/07/98/56/1101079856_100_m.png';
+        title = song.name.length > 27 ? song.name.substring(0, 27) + '...' : song.name;
         let arArr = [];
         song.singer.forEach((v) => {
             arArr = arArr.concat(v.name);
@@ -55,7 +38,7 @@ function getAppContent(song, type = '163') {
         jumpUrl = `https://y.music.163.com/m/song?app_version=7.3.12&id=${song.id}`;
         musicUrl = `http://music.163.com/song/media/outer/url?id=${song.id}.mp3`;
         preview = song.al.picUrl;
-        songName = song.name.length > 27 ? song.name.substring(0, 27) + '...' : song.name;
+        title = song.name.length > 27 ? song.name.substring(0, 27) + '...' : song.name;
         let arArr = [];
         song.ar.forEach((v) => {
             arArr = arArr.concat(v.name);
@@ -63,57 +46,14 @@ function getAppContent(song, type = '163') {
         const arStr = arArr.join('/');
         ar = arStr.length > 36 ? arStr.substring(0, 36) + '...' : arStr;
     }
-
-    xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>' +
-        `<msg serviceID="2" templateID="1" action="web" brief="[分享] ${htmlEscape(songName)}" sourceMsgId="0" url="${htmlEscape(jumpUrl)}" flag="0" adverSign="0" multiMsgFlag="0">` +
-        '<item layout="2">' +
-        `<audio cover="${htmlEscape(preview)}" src="${htmlEscape(musicUrl)}" />` +
-        `<title>${htmlEscape(songName)}</title>` +
-        `<summary>${htmlEscape(ar)}</summary>` +
-        '</item>' +
-        `<source name="${tag}" icon="${icon}" url="http://web.p.qq.com/qqmpmobile/aio/app.html?id=${appid}" action="app" a_actionData="com.tencent.qqmusic" i_actionData="tencent${appid}://" appid="${appid}" />` +
-        '</msg>';
-    return [Message.Xml(xml), Message.Plain(`[分享]${songName}\n${ar}\n${jumpUrl}\n来自: ${tag}`)];
-    // const json = {
-    //     app: 'com.tencent.structmsg',
-    //     config: {
-    //         autosize: true,
-    //         // ctime: Math.round(Date.now() / 1000),
-    //         forward: true,
-    //         token: '',//stringRandom(32, { letters: 'abcdefghljklmnopqrstuvwxyz' }),
-    //         type: 'normal'
-    //     },
-    //     desc: '音乐',
-    //     extra: { app_type: 1, appid },
-    //     meta: {
-    //         music: {
-    //             action: '',
-    //             android_pkg_name: '',
-    //             app_type: 1,
-    //             appid,
-    //             desc: ar,
-    //             jumpUrl,
-    //             musicUrl,
-    //             preview,
-    //             sourceMsgId: '0',
-    //             source_icon: '',
-    //             source_url: '',
-    //             tag,
-    //             title: songName
-    //         }
-    //     },
-    //     prompt: `[分享]${songName}`,
-    //     ver: '0.0.0.1',
-    //     view: 'music'
-    // };
-    // return [Message.App(JSON.stringify(json)), Message.Plain(`[分享]${songName}\n${ar}\n${jumpUrl}\n来自: ${tag}`)];
+    return [Message.MusicShare(kind, title, ar, jumpUrl, preview, musicUrl, "")];
 }
 
 /**
  * QQ音乐搜索
  * @param {string} keyword 
  */
-async function qqMusicSearch(keyword) {
+async function qqMusic  (keyword) {
     const { data } = await axios.get(`https://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.song&searchid=&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p=1&n=20&w=${encodeURI(keyword)}`);
     const j = /callback\((.+)\)$/.exec(data)[1];
     return JSON.parse(j);
@@ -128,6 +68,10 @@ module.exports = async (ctx) => {
     // uin = ctx.el.qq;
     const cool = coolDown()
     mirai.on('message', async (msg) => {
+        if (msg.plain.indexOf('届かない恋') != -1) {
+            msg.reply([Message.Voice(null, null, './data/net.mamoe.mirai-api-http/voices/茅野愛衣 - 届かない恋.silk')]);
+            return;
+        }
         const typeString = msg.plain.split(" ")[0].toLowerCase();
         const keyword = msg.plain.slice(typeString.length).trim();
         if (typeString === '网易点歌' || typeString === '点歌') {
@@ -166,16 +110,13 @@ module.exports = async (ctx) => {
                     return;
                 }
                 let song = r.data.song.list[0];
-                const { data } = await axios.get(`https://api.qq.jsososo.com/song/url?type=320&id=${song.mid}`, {
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
-                    }
-                });
-                if (!data) {
+                const musicUrl = await qqMusic.api('song/url', { id: song.mid });
+                // console.log(musicUrl);
+                if (!musicUrl || !musicUrl.data) {
                     throw new Error('音频地址为空');
                 }
-                logger.info(`[music] QQ音频地址:${data.data}`);
-                song.url = data.data;
+                logger.info(`[music] QQ音频地址:${musicUrl.data}`);
+                song.url = musicUrl.data;
                 const appData = getAppContent(song, 'qq');
                 msg.reply(appData);
                 cool.setCoolDown(msg.sender.id, 5 * 60);

@@ -27,7 +27,7 @@ module.exports = (ctx, options) => {
     占卜 <augur>
     舔狗日记/旧舔狗日记
     砸瓦鲁多/泷泽萝拉哒
-    涩图/色图
+    涩图/色图（停用）
     彩虹屁
     神回复
     骂我/钉宫
@@ -37,14 +37,5 @@ module.exports = (ctx, options) => {
                 msg.reply(text).then(r => console.log(r))
             }
         })
-        if (msg.plain === '投食') {
-            msg.reply(
-                [
-                    Message.Image(null, null, 'toushi/wx.jpg'),
-                    Message.Image(null, null, 'toushi/zfb.jpg'),
-                    Message.Plain('\n如果喜欢我，欢迎投食')
-                ]
-            )
-        }
     })
 }

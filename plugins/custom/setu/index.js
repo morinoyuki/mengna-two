@@ -7,7 +7,6 @@ const { Message, check } = require('mirai-ts');
 
 let setuOpt = {
     apiKey: '',
-    resetDomain: '',
     // proxy: "https://images.weserv.nl/?url=",
     loliconApiGroup: [],
     limit: 3,
@@ -34,8 +33,8 @@ async function formatResult(data) {
         [
             Message.Plain(
                 `标题: ${data.title}` +
-                `\nP站: ${await getAdLink('https://www.pixiv.net/artworks/' + data.pid)}` +
-                // `\nP站: https://www.pixiv.net/artworks/${data.pid}` +
+                // `\nP站: ${await getAdLink('https://www.pixiv.net/artworks/' + data.pid)}` +
+                `\nP站: https://www.pixiv.net/artworks/${data.pid}` +
                 `\nTAG: ${data.tags.join()}`
                 // '\n提示：如要原图请到上方地址获取'
             )
@@ -65,7 +64,7 @@ function checkLimit(sender) {
         limitData[sender.id.toString()].num < setuOpt.limit
 }
 /**
- * 
+ * 发送涩图
  * @param {*} msg 
  * @param {Boolean} lolicon 
  * @param {Boolean} r18 
@@ -73,7 +72,7 @@ function checkLimit(sender) {
 async function sendSetu(msg, lolicon, r18) {
     const result = await (lolicon ? getLoliconSetu(r18) : getSetu())
     const r = await msg.reply(result[0])
-    msg.reply(result[1])
+    if (r.code === 0) msg.reply(result[1])
     return r
     // msg.reply([Message.Quote(r.messageId), ...result[1]])
 }
@@ -98,27 +97,7 @@ module.exports = (ctx, options) => {
             })
         }, (2 * 60 * 1000) - 5000)
     }
-
-    if (webhook.config.enable) webhook.on('setu',
-        /**
-         * 清零
-         * @param {*} data 
-         * @param {ServerResponse} res 
-         */
-        (data, res) => {
-            const { qq, code } = data
-            if (limitData[qq] && limitData[qq].code === code && !limitData[qq].reset) {
-                limitData[qq].num = 0
-                limitData[qq].reset = true
-                res.end('已成功清零复活')
-            } else {
-                res.end('错误')
-            }
-        }
-    )
-
     let r18 = false
-
     mirai.on('message', msg => {
         if (msg.plain === 'r18开关') {
             if (ctx.user.isMaster(msg.sender.id)) {
@@ -128,6 +107,18 @@ module.exports = (ctx, options) => {
                 msg.reply('无权开启')
             }
         }
+        const loliKeyword = [
+            ['色图', '萝莉'],
+            ['涩图', '萝莉'],
+            ['炼铜', '图'],
+        ]
+        for (let i = 0; i < loliKeyword.length; i++) {
+            if (check.includes(msg.plain, loliKeyword[i])) {
+                msg.reply(Message.Image(null, null, 'setu/fbi.png'))
+                return
+            }
+        }
+
         setuOpt.match.forEach(async obj => {
             if (check.match(msg.plain, obj)) {
                 if (checkLimit(msg.sender)) {
@@ -146,8 +137,6 @@ module.exports = (ctx, options) => {
                         sendSetu(msg, true, false).then(autoRemove)
 
                     }
-                } else if (!limitData[msg.sender.id.toString()].reset && webhook.config.enable) {
-                    msg.reply(`你已冲死将在晚上2点复活 或是访问：${await getAdLink(`http://${setuOpt.resetDomain}:${webhook.config.port}/?type=setu&qq=${msg.sender.id}&code=${limitData[msg.sender.id.toString()].code}`)} 复活`)
                 } else {
                     msg.reply('你已再起不能将在晚上2点复活')
                 }

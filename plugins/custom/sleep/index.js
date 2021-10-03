@@ -7,6 +7,7 @@ const { default: Bot } = require("el-bot");
 module.exports = (ctx) => {
     const { mirai } = ctx;
     mirai.on('GroupMessage', (msg) => {
+        msg.isAt(454693264)
         const qq = msg.sender
         if (msg.plain === 'sleep') {
             if (qq.permission === 'MEMBER' && qq.group.permission !== 'MEMBER') {

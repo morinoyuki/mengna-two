@@ -8,13 +8,13 @@ plugins:
     # - dev
     # - teach
   # official:
-    # - setu
-    # - hitokoto
-    # - niubi
+  # - setu
+  # - hitokoto
+  # - niubi
   custom:
     - ./plugins/custom/search-anime
     - ./plugins/custom/search-image
-    - ./plugins/custom/invited-bot
+    # - ./plugins/custom/invited-bot
     - ./plugins/custom/kugimiya-voice
     - ./plugins/custom/setu
     - ./plugins/custom/music
@@ -60,7 +60,7 @@ search-image:
     results: 2 # 结果数
 
 cache:
-  cron: '0 0 2 * * *'
+  cron: "0 0 2 * * *"
 
 # 搜番
 search-anime:
@@ -69,31 +69,31 @@ search-anime:
 # 色图
 setu:
   apiKey: 877789775f5c596fa93852
-  resetDomain: '39.98.148.66'
+  resetDomain: "39.98.148.66"
   limit: 3
   loliconApiGroup:
     - 688934898
     - 828090839
-  # proxy: https://images.weserv.nl/?url=
+  proxy: https://images.weserv.nl/?url=
   match:
-    - is: 
-      - 不够色
-      - 涩图
-      - 色图
+    - is:
+        - 不够色
+        - 涩图
+        - 色图
     - includes:
-      - 来
-      - 色图
+        - 来
+        - 色图
     - includes:
-      - 来
-      - 涩图
+        - 来
+        - 涩图
 
 # 帮助
 help:
   match:
-    - is: 
-      - 帮助
-      - help
-      - 指令
+    - is:
+        - 帮助
+        - help
+        - 指令
 
 # 群管
 group-manager:
@@ -123,7 +123,6 @@ rss:
       group:
         - 1014055660
 
-
 # 消息应答
 answer:
   - is: 神回复
@@ -147,7 +146,7 @@ answer:
       - 舔狗日志
     api: http://api.tianapi.com/txapi/tiangou/index?key=cad4a30daed58e927106c1aabfebefec
     reply: ${data.newslist[0].content}
-  - listen: 
+  - listen:
       - 3580562304
     includes:
       - 只是
@@ -160,7 +159,7 @@ answer:
     else:
       - type: Plain
         text: 正好老娘也没把你当人
-  - listen: 
+  - listen:
       - 3580562304
     includes:
       - 不喜欢你
@@ -171,7 +170,7 @@ answer:
     else:
       - type: Plain
         text: 很好
-  - listen: 
+  - listen:
       - 3580562304
     includes:
       - 你喜欢谁
@@ -179,7 +178,7 @@ answer:
     reply:
       - type: Plain
         text: 我喜欢纱和酱o(*≧▽≦)ツ！无论是脸，声音，手指，皮肤，四肢，毛发，我都喜欢。目前正在计划如何把纱和酱绑架到地下室，让纱和酱只属于我一个人。 （由乃.jpg）
-  - listen: 
+  - listen:
       - 3580562304
     includes:
       - 你平常
@@ -189,7 +188,7 @@ answer:
     reply:
       - type: Plain
         text: 才……才不是因为和你说话就害羞了，绝对没有！
-  - listen: 
+  - listen:
       - 3580562304
     includes:
       - 群里哪对
@@ -198,14 +197,14 @@ answer:
     reply:
       - type: Plain
         text: 当然是我和纱和酱，不管是我是父亲大人的孩子，纱和酱是父亲大人的女仆，还是其他什么的，我和纱和酱绝对是应该喜结连理的，这是命中注定！
-  - listen: 
+  - listen:
       - 3580562304
     includes: 自我介绍
     at: true
     reply:
       - type: Plain
         text: 我是父亲大人所创造出来的群聊虚拟偶像兼管理，目前还不成熟，小女子不才，请多多关照，啾ღ(✞╹◡╹✞)ற
-  - listen: 
+  - listen:
       - 3580562304
     includes:
       - 告白
@@ -309,7 +308,7 @@ answer:
     reply:
       - type: Plain
         text: 阿库娅
-  - is: '?'
+  - is: "?"
     # quote: true
     # at: true
     reply:
@@ -441,7 +440,7 @@ answer:
     reply:
       - type: Plain
         text: https://www.bilibili.com/video/av57748098
-  - includes: 我爱你 
+  - includes: 我爱你
     quote: true
     at: true
     reply:
@@ -477,12 +476,12 @@ answer:
     reply:
       - type: Plain
         text: 四斋蒸鹅心
-  - includes: '??'
+  - includes: "??"
     quote: true
     at: true
     reply:
       - type: Plain
-        text: '??'
+        text: "??"
   - includes: 臭弟弟
     quote: true
     at: true

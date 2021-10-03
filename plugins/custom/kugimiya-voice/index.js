@@ -2,7 +2,8 @@ const fs = require('fs');
 const { Message } = require('mirai-ts');
 const { default: Bot } = require('el-bot');
 const { Logger } = require('el-bot/dist/bot/logger');
-
+const path = require('path');
+const dir = './data/net.mamoe.mirai-api-http/voices/钉宫'
 let cacheFiles = [];
 
 /**
@@ -11,7 +12,7 @@ let cacheFiles = [];
  */
 function loadFiles(logger) {
     try {
-        cacheFiles = fs.readdirSync('./mcl/data/net.mamoe.mirai-api-http/voices/钉宫');
+        cacheFiles = fs.readdirSync(path.join('./mcl', dir));
     } catch (e) {
         logger.error(`[kugimiya-voice] ${e.message}`);
     }
@@ -23,7 +24,8 @@ function loadFiles(logger) {
 function sendVoice(reply) {
     const i = Math.floor(Math.random() * cacheFiles.length);
     const voice = cacheFiles[i];
-    reply([Message.Voice(null, null, `钉宫/${voice}`)]);
+    // console.log(path.resolve(dir, voice));
+    reply([Message.Voice(null, null, path.join(dir, voice))]);
 }
 
 /**

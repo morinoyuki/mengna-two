@@ -1,5 +1,6 @@
-const adultCheck = require('../plugins/utils/adultCheck').submitRemoteImage
-
-adultCheck('https://pbs.twimg.com/media/EhEap8DU0AA0Z7k?format=jpg&name=900x900').then(bool => {
-    console.log(bool)
-})
+const qqMusic = require('qq-music-api');
+qqMusic.setCookie('_qpsvr_localtk=0.3749926805038728;euin=7e4P7wEiowCP;fqm_pvqid=d233841b-edbe-4b61-b8f3-251ce71a29d3;fqm_sessionid=126c5718-d273-4bfa-bff5-b3632fe8a22d;login_type=1;pgv_info=ssid=s2971326624;pgv_pvid=2715866681;psrf_access_token_expiresAt=1636955172;psrf_musickey_createtime=1629179172;psrf_qqaccess_token=080354453C2EEEA10E7B84C3E5EDD0B3;psrf_qqopenid=D7A3B220BA4CAF9F14C0904862C5662A;psrf_qqrefresh_token=72C073E6EE7708FDD9FEB2F6C0E69E3A;psrf_qqunionid=;ptcz=4d540b988a3631c647dfe9e7dcd0c7e7080157982759db0c8d93ff333241a070;qm_keyst=Q_H_L_2GIJR460eeO-HvRFeqhd8lec3NcKcetxH8NOUuFvgk8TeoEjMyZx2lo2rxN3rZ5;qqmusic_key=Q_H_L_2GIJR460eeO-HvRFeqhd8lec3NcKcetxH8NOUuFvgk8TeoEjMyZx2lo2rxN3rZ5;RK=uKIo39JuQr;tmeLoginType=2;uin=454693264;wxopenid=;wxrefresh_token=;wxunionid=;qm_keyst=Q_H_L_2GIJR460eeO-HvRFeqhd8lec3NcKcetxH8NOUuFvgk8TeoEjMyZx2lo2rxN3rZ5;ts_last=y.qq.com/n/ryqq/songDetail/004ZGtR50HAuAj;ts_refer=ADTAGh5_playsong;ts_uid=5267705280;')
+qqMusic.api('song/url', { id: '004ZGtR50HAuAj', type: '128' })
+    .then(res => {
+        console.log(res);
+    })

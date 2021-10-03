@@ -5,6 +5,8 @@ const tough = require('tough-cookie')
 const FromData = require('form-data')
 const { JSDOM } = require('jsdom')
 const stringRandom = require('string-random')
+const { coolDown } = require('../../utils')
+
 const cookieJar = new tough.CookieJar()
 const url = 'https://cn.shindanmaker.com/'
 const list = {
@@ -40,7 +42,7 @@ async function getAugur(id, name) {
         const formData = new FromData()
         const token = await getToken()
         formData.append('_token', token)
-        formData.append('name', name)
+        formData.append('shindanName', name)
         formData.append('hiddenName', '无名的' + stringRandom(1, {
             numbers: false,
             letters: 'ABCDEFGHIJKLMNOPQRSTUVWSYZ'
@@ -55,9 +57,9 @@ async function getAugur(id, name) {
         const result = document.querySelector('#shindanResultContent').innerHTML
         const content = result.replace(/<br>/g, '\n').replace(/<[a-z/="-_ ]+>/ig, '').trim()
         cookieJar.removeAllCookiesSync()
-        return content
+        return [content, true]
     } catch (e) {
-        return '占卜数据读取失败 ' + e.message
+        return ['占卜数据读取失败 ' + e.message, false]
     }
 }
 
@@ -67,7 +69,7 @@ async function getAugur(id, name) {
  */
 module.exports = async ctx => {
     const { mirai } = ctx
-
+    const cool = coolDown()
     mirai.on('message', async msg => {
         const keyword = msg.plain.split(' ')[0].toLowerCase()
         if (msg.plain === '占卜') {
@@ -76,10 +78,16 @@ module.exports = async ctx => {
             msg.reply(content)
         }
         if (keyword === '占卜') {
+            if (msg.group(495487453) && !cool.checkCoolDown(msg.sender.id, msg.reply)) {
+                return;
+            }
             const augurName = msg.plain.slice(keyword.length).trim()
             const augurId = list[augurName.toUpperCase()]
-            if (augurId)
-                msg.reply(await getAugur(augurId, msg.sender.memberName || msg.sender.nickname))
+            if (augurId) {
+                const [content, ok] = await getAugur(augurId, msg.sender.memberName || msg.sender.nickname)
+                if (ok && msg.group(495487453)) cool.setCoolDown(msg.sender.id, 4 * 60 * 60)
+                msg.reply(content)
+            }
         }
     })
 }

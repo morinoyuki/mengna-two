@@ -2,7 +2,10 @@ const { default: Bot } = require("el-bot");
 const { Message } = require("mirai-ts");
 const schedule = require("node-schedule");
 const { coolDown } = require("../../utils");
-let nietaList = require("./nieta");
+const path = require('path');
+const nietaList = require("./nieta");
+const voiceDir = './data/net.mamoe.mirai-api-http/voices';
+const imageDir = './data/net.mamoe.mirai-api-http/images';
 
 function sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -29,13 +32,13 @@ module.exports = (ctx) => {
         for (let i = 0; i < nieta.length; i++) {
             switch (nieta[i].type) {
                 case "record":
-                    await msg.reply([Message.Voice(null, null, nieta[i].file)]);
+                    await msg.reply([Message.Voice(null, null, path.join(voiceDir, nieta[i].file))]);
                     break;
                 case "message":
                     await msg.reply(nieta[i].msg);
                     break;
                 case "image":
-                    await msg.reply([Message.Image(null, null, nieta[i].file)]);
+                    await msg.reply([Message.Image(null, null, path.join(imageDir, nieta[i].file))]);
                     break;
                 case "xml":
                     await msg.reply([Message.Xml(nieta[i].content)]);
@@ -62,6 +65,10 @@ module.exports = (ctx) => {
             nietaList[msg.plain] &&
             cool.checkCoolDown(msg.sender.id, msg.reply)
         ) {
+            if (msg.group(495487453)) {
+                msg.reply('本群禁用');
+                return;
+            }
             if (
                 number[msg.sender.group.id] !== undefined &&
                 number[msg.sender.group.id] >= 3
