@@ -12,9 +12,7 @@ interface SearchOptions {
   token: string[];
   options: Options;
 }
-interface SearchFlag {
-  [key: string]: boolean;
-}
+
 let client: Client;
 let cache: CacheManager;
 
@@ -63,8 +61,10 @@ async function saSearch(
       similarity = saData.similarity;
       cache.setCache(imageMd5, "saucenao", content, similarity);
     } catch (e) {
-      if (e instanceof Error)
+      if (e instanceof Error) {
         logger.error(`[search-image] ${e.message}`);
+        content = [Message.Plain(e.message)];
+      }
       similarity = 0;
     }
   }
@@ -84,23 +84,23 @@ async function a2dSearch(
   if (ascii2dCache) {
     logger.success("[search-image] [ascii2d] 使用缓存数据");
     return ascii2dCache.msg as MessageType.MessageChain;
-  } else {
-    logger.info("[search-image] [ascii2d] 搜索中");
-    try {
-      const a2dContent = (await limitTime(
-        3 * 60 * 1000,
-        async () => await ascii2d(url, logger)
-      )) as MessageType.MessageChain;
-      logger.success("[search-image] [ascii2d] 搜索结束");
-      cache.setCache(imageMd5, "ascii2d", a2dContent, 0);
-      return a2dContent;
-    } catch (e) {
-      if (e instanceof Error) {
-        logger.error(`[search-image] ${e.message}`);
-        return [Message.Plain(e.message)] as MessageType.MessageChain;
-      }
+  }
+  logger.info("[search-image] [ascii2d] 搜索中");
+  try {
+    const a2dContent = (await limitTime(
+      3 * 60 * 1000,
+      async () => await ascii2d(url, logger)
+    )) as MessageType.MessageChain;
+    logger.success("[search-image] [ascii2d] 搜索结束");
+    cache.setCache(imageMd5, "ascii2d", a2dContent, 0);
+    return a2dContent;
+  } catch (e) {
+    if (e instanceof Error) {
+      logger.error(`[search-image] ${e.message}`);
+      return [Message.Plain(e.message)] as MessageType.MessageChain;
     }
   }
+  return [Message.Plain('未知错误')] as MessageType.MessageChain;
 }
 
 async function iqdbSearch(
@@ -127,9 +127,15 @@ async function iqdbSearch(
       cache.setCache(imageMd5, "iqdb", iqData.content, iqData.similarity);
       return iqData;
     } catch (e) {
-      logger.error(`[search-image] ${e.message}`);
+      if (e instanceof Error) {
+        logger.error(`[search-image] ${e.message}`);
+        return {
+          content: [Message.Plain("error: " + e.message)],
+          similarity: 0,
+        } as IqdbResult;
+      }
       return {
-        content: [Message.Plain("error: " + e.message)],
+        content: [Message.Plain("error: 未知")],
         similarity: 0,
       } as IqdbResult;
     }
@@ -161,15 +167,15 @@ export default async function (
         });
       }, 2 * 60 * 1000 - 5000);
   };
-  let searchImageFlag: SearchFlag = {};
-  let a2dFlag: SearchFlag = {};
-  let iqdbFlag: SearchFlag = {};
+  const searchImageFlag = new Set<number>();
+  const a2dFlag = new Set<number>();
+  const iqdbFlag = new Set<number>();
   mirai.on("message", async (msg) => {
     if (
       msg.plain.trim() === "搜图" &&
       cool.checkCoolDown(msg.sender.id, msg.reply)
     ) {
-      searchImageFlag[msg.sender.id.toString()] = true;
+      searchImageFlag.add(msg.sender.id);
       cool.setCoolDown(msg.sender.id, 5 * 60);
       if (msg.messageChain.length == 2) {
         msg.reply("请发送要搜索的图片");
@@ -180,7 +186,7 @@ export default async function (
       cool.checkCoolDown(msg.sender.id, msg.reply)
     ) {
       cool.setCoolDown(msg.sender.id, 5 * 60);
-      a2dFlag[msg.sender.id.toString()] = true;
+      a2dFlag.add(msg.sender.id);
       if (msg.messageChain.length == 2) {
         msg.reply("请发送要搜索的图片");
         return;
@@ -190,13 +196,13 @@ export default async function (
       iCool.checkCoolDown(msg.sender.id, msg.reply)
     ) {
       iCool.setCoolDown(msg.sender.id, 5 * 60);
-      iqdbFlag[msg.sender.id.toString()] = true;
+      iqdbFlag.add(msg.sender.id);
       if (msg.messageChain.length == 2) {
         msg.reply("请发送要搜索的图片");
         return;
       }
     }
-    if (searchImageFlag[msg.sender.id.toString()]) {
+    if (searchImageFlag.has(msg.sender.id)) {
       msg.messageChain.forEach(async (message) => {
         if (message.type === "Image") {
           const imageMd5 = message.url!.match(/\-([^-\/]{32})/)![1];
@@ -256,9 +262,9 @@ export default async function (
           }
         }
       });
-      if (searchImageFlag[msg.sender.id.toString()])
-        delete searchImageFlag[msg.sender.id.toString()];
-    } else if (a2dFlag[msg.sender.id.toString()]) {
+      if (searchImageFlag.has(msg.sender.id))
+        searchImageFlag.delete(msg.sender.id);
+    } else if (a2dFlag.has(msg.sender.id)) {
       msg.messageChain.forEach(async (message) => {
         if (message.type === "Image") {
           const imageMd5 = message.url!.match(/\-([^-\/]{32})/)![1];
@@ -271,9 +277,9 @@ export default async function (
             });
         }
       });
-      if (a2dFlag[msg.sender.id.toString()])
-        delete a2dFlag[msg.sender.id.toString()];
-    } else if (iqdbFlag[msg.sender.id.toString()]) {
+      if (a2dFlag.has(msg.sender.id))
+        a2dFlag.delete(msg.sender.id);
+    } else if (iqdbFlag.has(msg.sender.id)) {
       msg.messageChain.forEach(async (message) => {
         if (message.type === "Image") {
           const imageMd5 = message.url!.match(/\-([^-\/]{32})/)![1];
@@ -287,8 +293,8 @@ export default async function (
             });
         }
       });
-      if (iqdbFlag[msg.sender.id.toString()])
-        delete iqdbFlag[msg.sender.id.toString()];
+      if (iqdbFlag.has(msg.sender.id))
+        iqdbFlag.delete(msg.sender.id);
     }
   });
 }

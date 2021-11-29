@@ -28,7 +28,7 @@ async function formatResult(data) {
     if (setuOpt.proxy) data.url = setuOpt.proxy + data.url
     const r = [
         [
-            Message.Image(null, data.url)
+            Message.Image(null, data.urls.regular ?? data.urls.original)
         ],
         [
             Message.Plain(
@@ -48,12 +48,11 @@ async function getSetu() {
 }
 
 async function getLoliconSetu(r18 = false, keyword) {
-    const { data } = await axios.get(`https://api.lolicon.app/setu/?apikey=${setuOpt.apiKey}&r18=${Number(r18)}&size1200=true` +
-        (keyword ? '&keyword=' + keyword : ''))
-    if (data.code === 0) {
+    const { data } = await axios.get(`https://api.lolicon.app/setu/v2`, {
+        params: { size: 'regular', keyword, r18: Number(r18), proxy: 'i.miomoe.com' }
+    })
+    if (!data.error && data.data.length != 0) {
         return await formatResult(data.data[0])
-    } else if (data.code === 429) {
-        return await getSetu()
     } else {
         return '未知错误 code: ' + data.code
     }
@@ -83,7 +82,7 @@ async function sendSetu(msg, lolicon, r18) {
  * @param {setuOpt} options 
  */
 module.exports = (ctx, options) => {
-    const { mirai, logger, webhook } = ctx
+    const { mirai, logger } = ctx
     config.merge(setuOpt, options)
 
     schedule.scheduleJob(setuOpt.cron, () => {

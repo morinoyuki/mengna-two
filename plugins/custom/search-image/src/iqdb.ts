@@ -66,8 +66,10 @@ async function getSearchResults(url: string): Promise<Item[]> {
     .map(parseItemInfo);
   return result;
 }
+
 async function formatResult(result: Item): Promise<MessageType.MessageChain> {
   // result.url = await Promise.all(result.url!.map(getAdLink));
+
   const r = [
     await getImage(result.image!),
     Message.Plain(

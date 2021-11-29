@@ -77,7 +77,7 @@ export function secFormat(sec: number): string {
 }
 
 export function coolDown(): CoolMethods {
-  let coolDownData: CoolData = {};
+  const coolDownData: CoolData = {};
   /**
    * 设置冷却时间
    * @param {Number} qq

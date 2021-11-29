@@ -53,7 +53,7 @@ function getAppContent(song, type = '163') {
  * QQ音乐搜索
  * @param {string} keyword 
  */
-async function qqMusic  (keyword) {
+async function qqMusicSearch(keyword) {
     const { data } = await axios.get(`https://c.y.qq.com/soso/fcgi-bin/client_search_cp?ct=24&qqmusic_ver=1298&new_json=1&remoteplace=txt.yqq.song&searchid=&t=0&aggr=1&cr=1&catZhida=1&lossless=0&flag_qc=0&p=1&n=20&w=${encodeURI(keyword)}`);
     const j = /callback\((.+)\)$/.exec(data)[1];
     return JSON.parse(j);

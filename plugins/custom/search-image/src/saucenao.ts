@@ -18,17 +18,17 @@ async function formatResult(
     await getImage(result.thumbnail),
     Message.Plain(
       `\n相似度：${result.similarity}` +
-        `\n站点：${result.site}` +
-        `\n链接：${result.url}` +
-        `\n作者：${result.authorName ?? "未知"}` +
-        "\n------------\n"
+      `\n站点：${result.site}` +
+      `\n链接：${result.url}` +
+      `\n作者：${result.authorName ?? "未知"}` +
+      "\n------------\n"
     ),
   ];
   return r;
 }
 
 /**
- * 获取客户端
+ * 获取Client
  * @param {String[]} token
  * @param {Options} options
  */
@@ -40,11 +40,7 @@ export default function (token: string[], options: Options): Client {
   let tokenIndex = 0;
   return async (url: string): Promise<SaucenaoResult> => {
     const result = await client[tokenIndex](url);
-    if (tokenIndex === client.length - 1) {
-      tokenIndex = 0;
-    } else {
-      tokenIndex++;
-    }
+    tokenIndex = (tokenIndex + 1) % client.length;
     let content = [] as MessageType.MessageChain;
     let num = 0;
     for (
